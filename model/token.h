@@ -30,6 +30,7 @@ class Token {
   bool IsCloseBracket() const { return type_ == TokenType::kCloseBracket; }
   bool IsUnaryOperator() const { return type_ == TokenType::kUnaryOperator; }
   bool IsBinaryOperator() const { return type_ == TokenType::kBinaryOperator; }
+  bool IsOperator() const { return IsUnaryOperator() || IsBinaryOperator(); }
   bool IsFunction() const { return type_ == TokenType::kFunction; }
 
  private:

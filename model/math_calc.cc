@@ -86,11 +86,13 @@ std::vector<Token> MathCalc::ConvertToRPN(const std::vector<Token>& tokens) {
         throw std::invalid_argument("Invalid bracket sequence");
       }
       operators.pop();
-    } else if (token.IsBinaryOperator() || token.IsUnaryOperator()) {
-      while (!operators.empty() &&
-             (operators.top().IsBinaryOperator() ||
-              (operators.top().IsUnaryOperator() &&
-               token.GetPriority() <= operators.top().GetPriority()))) {
+      if (!operators.empty() && operators.top().IsFunction()) {
+        rpn.push_back(operators.top());
+        operators.pop();
+      }
+    } else if (token.IsOperator()) {
+      while (!operators.empty() && operators.top().IsOperator() &&
+             token.GetPriority() <= operators.top().GetPriority()) {
         rpn.push_back(operators.top());
         operators.pop();
       }
@@ -123,7 +125,7 @@ double MathCalc::EvaluateRPN(const std::vector<Token>& rpn, double x) {
       operands.push(std::stod(token.GetToken()));
     } else if (token.IsVariable()) {
       operands.push(x);
-    } else if (token.IsBinaryOperator() || token.IsUnaryOperator()) {
+    } else if (token.IsOperator()) {
       ProcessOperator(token, operands);
     } else if (token.IsFunction()) {
       ProcessFunction(token, operands);
@@ -212,7 +214,7 @@ std::size_t MathCalc::ParseAlpha(const std::string& expression, std::size_t pos,
   if (tok == "x") {
     tokens.push_back(Token(TokenType::kVariable, tok));
   } else if (tok == "mod") {
-    tokens.push_back(Token(TokenType::kBinaryOperator, tok));
+    tokens.push_back(Token(TokenType::kBinaryOperator, tok, 3));
   } else {
     tokens.push_back(Token(TokenType::kFunction, tok));
   }
@@ -241,7 +243,7 @@ std::size_t MathCalc::ParseOperator(const std::string& expression,
     case '+':
     case '-':
       type = is_unary ? TokenType::kUnaryOperator : TokenType::kBinaryOperator;
-      priority = is_unary ? 1 : 2;
+      priority = is_unary ? 2 : 1;
       break;
     case '*':
     case '/':
