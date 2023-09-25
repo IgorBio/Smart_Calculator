@@ -8,7 +8,6 @@ namespace s21 {
 enum class TokenType {
   kNumber,
   kVariable,
-  kSci,
   kOpenBracket,
   kCloseBracket,
   kUnaryOperator,
@@ -27,7 +26,6 @@ class Token {
 
   bool IsNumber() const { return type_ == TokenType::kNumber; }
   bool IsVariable() const { return type_ == TokenType::kVariable; }
-  bool IsSci() const { return type_ == TokenType::kSci; }
   bool IsOpenBracket() const { return type_ == TokenType::kOpenBracket; }
   bool IsCloseBracket() const { return type_ == TokenType::kCloseBracket; }
   bool IsUnaryOperator() const { return type_ == TokenType::kUnaryOperator; }
