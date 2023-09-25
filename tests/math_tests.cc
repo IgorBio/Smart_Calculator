@@ -34,7 +34,51 @@ TEST(MathCalcTest, Exception) {
   EXPECT_THROW(MathCalc::Calculate("2 + 5.5.5"), std::invalid_argument);
   EXPECT_THROW(MathCalc::Calculate("2mod"), std::invalid_argument);
   EXPECT_THROW(MathCalc::Calculate("2asin"), std::invalid_argument);
-  //   EXPECT_THROW(MathCalc::Calculate("atan0.5"), std::invalid_argument);
+  // EXPECT_THROW(MathCalc::Calculate("atan0.5"), std::invalid_argument);
   EXPECT_THROW(MathCalc::Calculate("mod3"), std::invalid_argument);
   EXPECT_THROW(MathCalc::Calculate("3mob2"), std::invalid_argument);
+
+  EXPECT_THROW(MathCalc::Calculate("e-1"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("1.2e"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("1.2e+3.4"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("cos(12)e-3"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("1.2e*cos(34)"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("1.2ee-3"), std::invalid_argument);
+
+  EXPECT_THROW(MathCalc::Calculate("(x))"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("((x)"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("log(x"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("cosx"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("sin)(x)"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("tan(x))"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("asin(x("), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("acos)x)"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("atan((x)"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("sqrtx"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("2+3)ln)/4"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("8 *)*cos(25)"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("pow(3, 2)"), std::invalid_argument);
+}
+
+TEST(MathCalcTest, ExponentialNotation) {
+  double result = MathCalc::Calculate("1.0e2");
+  EXPECT_DOUBLE_EQ(result, 1.0e2);
+
+  result = MathCalc::Calculate("1.2e+3");
+  EXPECT_DOUBLE_EQ(result, 1.2e+3);
+
+  result = MathCalc::Calculate("3.4e-5");
+  EXPECT_DOUBLE_EQ(result, 3.4e-5);
+
+  result = MathCalc::Calculate("1.2 * 3.4e+5 * 6.7");
+  EXPECT_DOUBLE_EQ(result, 1.2 * 3.4e+5 * 6.7);
+}
+
+TEST(MathCalcTest, Brackets) {
+  double x = 25.0;
+  double result = MathCalc::Calculate("sin(cos(tan(sqrt(ln(log(x))))))", x);
+  EXPECT_DOUBLE_EQ(result, sin(cos(tan(sqrt(log(log10(x)))))));
+
+  result = MathCalc::Calculate("(2 - 9) / (7.5 + 2.0)", x);
+  EXPECT_DOUBLE_EQ(result, (2 - 9) / (7.5 + 2.0));
 }
