@@ -35,25 +35,28 @@ double MathCalc::Calculate(double x) { return EvaluateRPN(rpn_, x); }
  * @return A vector of tokens representing the parsed expression.
  */
 std::vector<Token> MathCalc::ParseExpression(const std::string& expression) {
-  std::string input = RemoveSpaces(expression);
   std::vector<Token> tokens;
   std::size_t pos = 0;
 
-  while (pos < input.length()) {
-    char ch = input[pos];
+  while (pos < expression.length()) {
+    char ch = expression[pos];
 
-    if (std::isdigit(ch) || ch == '.' || std::toupper(ch) == 'E') {
-      pos = ParseNumber(input, pos, tokens);
+    if (std::isdigit(ch) || ch == '.') {
+      InsertOmittedMul(tokens, true);
+      pos = ParseNumber(expression, pos, tokens);
     } else if (std::isalpha(ch)) {
-      pos = ParseAlpha(input, pos, tokens);
+      pos = ParseAlpha(expression, pos, tokens);
     } else if (ch == '(') {
+      InsertOmittedMul(tokens);
       tokens.push_back(Token(TokenType::kOpenBracket, "("));
       ++pos;
     } else if (ch == ')') {
       tokens.push_back(Token(TokenType::kCloseBracket, ")"));
       ++pos;
     } else if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^') {
-      pos = ParseOperator(input, pos, tokens);
+      pos = ParseOperator(expression, pos, tokens);
+    } else if (std::isspace(ch)) {
+      ++pos;
     } else {
       throw std::invalid_argument("Invalid character: " + std::string(1, ch));
     }
@@ -92,7 +95,9 @@ std::vector<Token> MathCalc::ConvertToRPN(const std::vector<Token>& tokens) {
       }
     } else if (token.IsOperator()) {
       while (!operators.empty() && operators.top().IsOperator() &&
-             token.GetPriority() <= operators.top().GetPriority()) {
+             (token.GetPriority() < operators.top().GetPriority() ||
+              (token.GetPriority() == operators.top().GetPriority() &&
+               !operators.top().IsRightAssociative()))) {
         rpn.push_back(operators.top());
         operators.pop();
       }
@@ -137,18 +142,6 @@ double MathCalc::EvaluateRPN(const std::vector<Token>& rpn, double x) {
   }
 
   return operands.top();
-}
-
-/**
- * @brief Static method to remove spaces from a mathematical expression.
- * @param expression The mathematical expression with spaces.
- * @return The expression with spaces removed.
- */
-std::string MathCalc::RemoveSpaces(const std::string& expression) {
-  std::string result = expression;
-  result.erase(std::remove_if(result.begin(), result.end(), ::isspace),
-               result.end());
-  return result;
 }
 
 /**
@@ -202,7 +195,8 @@ std::size_t MathCalc::ParseAlpha(const std::string& expression, std::size_t pos,
                                  std::vector<Token>& tokens) {
   std::size_t start = pos;
   while (pos < expression.length() && std::isalpha(expression[pos]) &&
-         expression.substr(start, pos - start) != "mod") {
+         expression.substr(start, pos - start) != "mod" &&
+         expression.substr(start, pos - start) != "x") {
     ++pos;
   }
   std::string tok = expression.substr(start, pos - start);
@@ -212,10 +206,12 @@ std::size_t MathCalc::ParseAlpha(const std::string& expression, std::size_t pos,
   }
 
   if (tok == "x") {
+    InsertOmittedMul(tokens);
     tokens.push_back(Token(TokenType::kVariable, tok));
   } else if (tok == "mod") {
     tokens.push_back(Token(TokenType::kBinaryOperator, tok, 3));
   } else {
+    InsertOmittedMul(tokens);
     tokens.push_back(Token(TokenType::kFunction, tok));
   }
 
@@ -236,23 +232,23 @@ std::size_t MathCalc::ParseOperator(const std::string& expression,
   TokenType type;
   short priority;
 
-  bool is_unary = (pos == 0 || expression[pos - 1] == '(' ||
+  bool is_unary = (tokens.size() == 0 || expression[pos - 1] == '(' ||
                    tokens.back().IsBinaryOperator());
 
   switch (op) {
     case '+':
     case '-':
       type = is_unary ? TokenType::kUnaryOperator : TokenType::kBinaryOperator;
-      priority = is_unary ? 2 : 1;
+      priority = is_unary ? 4 : 1;
       break;
     case '*':
     case '/':
       type = TokenType::kBinaryOperator;
-      priority = 3;
+      priority = 2;
       break;
     case '^':
       type = TokenType::kBinaryOperator;
-      priority = 4;
+      priority = 3;
       break;
     default:
       throw std::invalid_argument("Invalid operator: " + std::string(1, op));
@@ -262,6 +258,21 @@ std::size_t MathCalc::ParseOperator(const std::string& expression,
   ++pos;
 
   return pos;
+}
+
+/**
+ * @brief Inserts an omitted multiplication operator in the vector of tokens if
+ * necessary.
+ * @param tokens The vector of tokens to insert the operator into.
+ * @param flg A flag indicating insertion before number.
+ */
+void MathCalc::InsertOmittedMul(std::vector<Token>& tokens, bool flg) {
+  if ((!flg && !tokens.empty() &&
+       (tokens.back().IsNumber() || tokens.back().IsCloseBracket() ||
+        tokens.back().IsVariable())) ||
+      (flg && !tokens.empty() && tokens.back().IsCloseBracket())) {
+    tokens.push_back(Token(TokenType::kBinaryOperator, "*", 3));
+  }
 }
 
 /**
@@ -293,6 +304,10 @@ bool MathCalc::ValidateNumber(const std::string& token) {
     return false;
   }
 
+  if (token == "." || token.find(".e") == 0) {
+    return false;
+  }
+
   return true;
 }
 
@@ -317,6 +332,9 @@ bool MathCalc::ValidateAlpha(const std::string& token) {
  */
 void MathCalc::ProcessOperator(const Token& token,
                                std::stack<double>& operands) {
+  if (operands.size() < 1 && token.IsUnaryOperator()) {
+    throw std::invalid_argument("Not enough operands for unary operator");
+  }
   if (operands.size() < 2 && token.IsBinaryOperator()) {
     throw std::invalid_argument("Not enough operands for binary operator");
   }

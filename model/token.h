@@ -32,6 +32,7 @@ class Token {
   bool IsBinaryOperator() const { return type_ == TokenType::kBinaryOperator; }
   bool IsOperator() const { return IsUnaryOperator() || IsBinaryOperator(); }
   bool IsFunction() const { return type_ == TokenType::kFunction; }
+  bool IsRightAssociative() const { return token_ == "^"; }
 
  private:
   TokenType type_;

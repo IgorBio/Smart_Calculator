@@ -26,17 +26,17 @@ class MathCalc {
   static double Calculate(const std::string& expression, double x = 0.0);
   double Calculate(double x);
 
- private:
+ public:
   static std::vector<Token> ParseExpression(const std::string& expression);
   static std::vector<Token> ConvertToRPN(const std::vector<Token>& tokens);
   static double EvaluateRPN(const std::vector<Token>& rpn, double x);
-  static std::string RemoveSpaces(const std::string& expression);
   static std::size_t ParseNumber(const std::string& expression, std::size_t pos,
                                  std::vector<Token>& tokens);
   static std::size_t ParseAlpha(const std::string& expression, std::size_t pos,
                                 std::vector<Token>& tokens);
   static std::size_t ParseOperator(const std::string& expression,
                                    std::size_t pos, std::vector<Token>& tokens);
+  static void InsertOmittedMul(std::vector<Token>& tokens, bool flg = false);
   static bool ValidateNumber(const std::string& token);
   static bool ValidateAlpha(const std::string& token);
   static void ProcessOperator(const Token& token, std::stack<double>& operands);
