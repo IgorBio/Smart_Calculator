@@ -5,7 +5,7 @@
 using namespace s21;
 
 int main() {
-  std::string expression = "2xcos(3x)x4x";
+  std::string expression = "  x 55";
 
   std::vector<Token> tokens = MathCalc::ParseExpression(expression);
 

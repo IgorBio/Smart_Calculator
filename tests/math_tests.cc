@@ -24,11 +24,8 @@ TEST(MathCalcTest, Calculate) {
   result = MathCalc::Calculate("x + cos(x - 5) / x", x);
   EXPECT_DOUBLE_EQ(result, x + cos(x - 5) / x);
 
-  // result = MathCalc::Calculate("2xcos(3x)x4x", x);
-  // EXPECT_DOUBLE_EQ(result, 2 * x * cos(3 * x) * x * 4 * x);
-
-  // result = MathCalc::Calculate("tanx", x);
-  // EXPECT_DOUBLE_EQ(result, tan(x));
+  result = MathCalc::Calculate("2xcos(3x)x4x", x);
+  EXPECT_DOUBLE_EQ(result, 2 * x * cos(3 * x) * x * 4 * x);
 }
 
 TEST(MathCalcTest, ExponentialNotation) {
@@ -53,25 +50,25 @@ TEST(MathCalcTest, Brackets) {
   double result = MathCalc::Calculate("sin(cos(tan(sqrt(ln(log(x))))))", x);
   EXPECT_DOUBLE_EQ(result, sin(cos(tan(sqrt(log(log10(x)))))));
 
-  result = MathCalc::Calculate("(2 - 9) / (7.5 + 2.0)", x);
+  result = MathCalc::Calculate("(2 - 9) / (7.5 + 2.0)");
   EXPECT_DOUBLE_EQ(result, (2 - 9) / (7.5 + 2.0));
 }
 
 TEST(MathCalcTest, Operations) {
   double x = 25.0;
-  double result = MathCalc::Calculate("1234.5 + 678.9", x);
+  double result = MathCalc::Calculate("1234.5 + 678.9");
   EXPECT_DOUBLE_EQ(result, 1234.5 + 678.9);
 
   result = MathCalc::Calculate("-1234.5 - 2x", x);
   EXPECT_DOUBLE_EQ(result, -1234.5 - 2 * x);
 
-  result = MathCalc::Calculate("1234.5 * -678.9 / -2.223", x);
+  result = MathCalc::Calculate("1234.5 * -678.9 / -2.223");
   EXPECT_DOUBLE_EQ(result, 1234.5 * -678.9 / -2.223);
 
-  result = MathCalc::Calculate(" 123456789 + (+98765432.1)", x);
+  result = MathCalc::Calculate(" 123456789 + (+98765432.1)");
   EXPECT_DOUBLE_EQ(result, 123456789 + (+98765432.1));
 
-  result = MathCalc::Calculate("(123.4 * 567.8) / (234.5 * 678.9)", x);
+  result = MathCalc::Calculate("(123.4 * 567.8) / (234.5 * 678.9)");
   EXPECT_DOUBLE_EQ(result, (123.4 * 567.8) / (234.5 * 678.9));
 
   result = MathCalc::Calculate(" -x - -2x + x * (x + x)", x);
@@ -80,25 +77,25 @@ TEST(MathCalcTest, Operations) {
 
 TEST(MathCalcTest, Power) {
   double x = 5.0;
-  double result = MathCalc::Calculate("1234.5 ^ 4.1", x);
+  double result = MathCalc::Calculate("1234.5 ^ 4.1");
   EXPECT_DOUBLE_EQ(result, pow(1234.5, 4.1));
 
-  result = MathCalc::Calculate("2 ^ 3 ^ 4", x);
+  result = MathCalc::Calculate("2 ^ 3 ^ 4");
   EXPECT_DOUBLE_EQ(result, pow(2, pow(3, 4)));
 
-  result = MathCalc::Calculate("(4 ^ 3) ^ 2", x);
+  result = MathCalc::Calculate("(4 ^ 3) ^ 2");
   EXPECT_DOUBLE_EQ(result, pow(pow(4, 3), 2));
 
-  result = MathCalc::Calculate("-1234.5 ^ 0.0", x);
+  result = MathCalc::Calculate("-1234.5 ^ 0.0");
   EXPECT_DOUBLE_EQ(result, pow(-1234.5, 0.0));
 
-  result = MathCalc::Calculate("1234.5 ^ -2", x);
+  result = MathCalc::Calculate("1234.5 ^ -2");
   EXPECT_DOUBLE_EQ(result, pow(1234.5, -2));
 
-  result = MathCalc::Calculate("123456789 ^ (+0.42)", x);
+  result = MathCalc::Calculate("123456789 ^ (+0.42)");
   EXPECT_DOUBLE_EQ(result, pow(123456789, 0.42));
 
-  result = MathCalc::Calculate("(12.34 ^ 0.5678) ^ (23.45 ^ 0.6789)", x);
+  result = MathCalc::Calculate("(12.34 ^ 0.5678) ^ (23.45 ^ 0.6789)");
   EXPECT_DOUBLE_EQ(result, pow(pow(12.34, 0.5678), pow(23.45, 0.6789)));
 
   result = MathCalc::Calculate("-x ^ 2 * 2 ^ x", x);
@@ -107,16 +104,16 @@ TEST(MathCalcTest, Power) {
 
 TEST(MathCalcTest, Modulus) {
   double x = 25.0;
-  double result = MathCalc::Calculate("1234.5 mod 678.9", x);
+  double result = MathCalc::Calculate("1234.5 mod 678.9");
   EXPECT_DOUBLE_EQ(result, fmod(1234.5, 678.9));
 
-  result = MathCalc::Calculate("1234.5 mod -678.9", x);
+  result = MathCalc::Calculate("1234.5 mod -678.9");
   EXPECT_DOUBLE_EQ(result, fmod(1234.5, -678.9));
 
-  result = MathCalc::Calculate("123456789 mod (+98765432.1)", x);
+  result = MathCalc::Calculate("123456789 mod (+98765432.1)");
   EXPECT_DOUBLE_EQ(result, fmod(123456789, 98765432.1));
 
-  result = MathCalc::Calculate("(123.4 mod 0.5678) mod (234.5 mod 0.6789)", x);
+  result = MathCalc::Calculate("(123.4 mod 0.5678) mod (234.5 mod 0.6789)");
   EXPECT_DOUBLE_EQ(result, fmod(fmod(123.4, 0.5678), fmod(234.5, 0.6789)));
 
   result = MathCalc::Calculate("50modx", x);
@@ -146,10 +143,10 @@ TEST(MathCalcTest, Functions) {
   result = MathCalc::Calculate("25.modsqrt(35)/-x", x);
   EXPECT_DOUBLE_EQ(result, fmod(25, sqrt(35)) / -0.25);
 
-  result = MathCalc::Calculate("tan(1.570796)", x);
+  result = MathCalc::Calculate("tan(1.570796)");
   EXPECT_DOUBLE_EQ(result, tan(1.570796));
 
-  result = MathCalc::Calculate("tan(0)", x);
+  result = MathCalc::Calculate("tan(0)");
   EXPECT_DOUBLE_EQ(result, tan(0));
 }
 
@@ -231,4 +228,9 @@ TEST(MathCalcTest, Exception) {
   EXPECT_THROW(MathCalc::Calculate("pow(3, 2)"), std::invalid_argument);
 
   EXPECT_THROW(MathCalc::Calculate("1 / 0.0"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("asin(2)"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("acos(3)"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("sqrt(-4)"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("ln(0.0)"), std::invalid_argument);
+  EXPECT_THROW(MathCalc::Calculate("log(-1)"), std::invalid_argument);
 }
