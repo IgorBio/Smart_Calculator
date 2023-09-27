@@ -29,7 +29,7 @@ class MathCalc {
   static double Calculate(const std::string& expression, double x = 0.0);
   double Calculate(double x);
 
- public:
+ private:
   static std::vector<Token> ParseExpression(const std::string& expression);
   static std::vector<Token> ConvertToRPN(const std::vector<Token>& tokens);
   static double EvaluateRPN(const std::vector<Token>& rpn, double x);

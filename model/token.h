@@ -15,6 +15,17 @@ enum class TokenType {
   kFunction
 };
 
+/**
+ * @class Token
+ * @brief Token represents a unit of a mathematical expression.
+ *
+ * Token is used to encapsulate individual elements of a mathematical
+ * expression, such as numbers, variables, operators, brackets, and functions.
+ * It provides methods for querying the type, value, and priority of the token.
+ *
+ * The class is designed to work in conjunction with the MathCalc class for
+ * parsing, converting, and evaluating mathematical expressions.
+ */
 class Token {
  public:
   Token(TokenType type, const std::string& token, short priority = 0)
