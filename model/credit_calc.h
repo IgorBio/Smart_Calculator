@@ -2,7 +2,6 @@
 #define SMARTCALC_MODEL_CREDIT_CALC_H_
 
 #include <cmath>
-#include <ctime>
 #include <numeric>
 #include <stdexcept>
 #include <tuple>
@@ -10,6 +9,15 @@
 
 namespace s21 {
 
+/**
+ * @class CreditCalc
+ * @brief A class for calculating credit payment details.
+ *
+ * The `CreditCalc` class provides static methods for calculating credit
+ * payments, including annuity and differentiated payments, based on the
+ * provided credit parameters. It supports both annuity and differentiated
+ * repayment methods.
+ */
 class CreditCalc {
  public:
   static std::tuple<std::vector<double>, double, double> Calculate(

@@ -2,6 +2,24 @@
 
 namespace s21 {
 
+/**
+ * @brief Calculate credit payments, overpayment and total payment.
+ *
+ * This method calculates either annuity or differentiated credit payments
+ * based on the provided credit parameters.
+ *
+ * @param sum The principal loan amount.
+ * @param rate The annual interest rate (in percentage).
+ * @param term The loan term in months.
+ * @param is_annuity Set to true for annuity payments, false for differentiated.
+ *
+ * @return A tuple containing:
+ *   - A vector of monthly payments.
+ *   - The total overpayment (interest paid).
+ *   - The total payment (including the principal).
+ *
+ * @throws std::invalid_argument if any of the input parameters are invalid.
+ */
 std::tuple<std::vector<double>, double, double> CreditCalc::Calculate(
     double sum, double rate, int term, bool is_annuity) {
   if (sum <= 0.0 || rate <= 0.0 || term <= 0) {
@@ -23,6 +41,18 @@ std::tuple<std::vector<double>, double, double> CreditCalc::Calculate(
   return std::make_tuple(payments, total_overpayment, total_payment);
 }
 
+/**
+ * @brief Calculate annuity credit payments.
+ *
+ * This method calculates annuity credit payments based on the provided credit
+ * parameters.
+ *
+ * @param sum The principal loan amount.
+ * @param monthly_rate The monthly interest rate (decimal).
+ * @param term The loan term in months.
+ *
+ * @return A vector of monthly payments, each rounded to two decimal places.
+ */
 std::vector<double> CreditCalc::CalculateAnnuity(double sum,
                                                  double monthly_rate,
                                                  int term) {
@@ -35,6 +65,19 @@ std::vector<double> CreditCalc::CalculateAnnuity(double sum,
   return payments;
 }
 
+/**
+ * @brief Calculate differentiated credit payments.
+ *
+ * This method calculates differentiated credit payments based on the provided
+ * credit parameters. Differentiated payments consist of varying principal and
+ * interest amounts over the loan term.
+ *
+ * @param sum The principal loan amount.
+ * @param monthly_rate The monthly interest rate (decimal).
+ * @param term The loan term in months.
+ *
+ * @return A vector of monthly payments, each rounded to two decimal places.
+ */
 std::vector<double> CreditCalc::CalculateDifferentiated(double sum,
                                                         double monthly_rate,
                                                         int term) {
