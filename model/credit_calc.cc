@@ -20,14 +20,16 @@ namespace s21 {
  *
  * @throws std::invalid_argument if any of the input parameters are invalid.
  */
-std::tuple<std::vector<double>, double, double> CreditCalc::Calculate(
-    double sum, double rate, int term, bool is_annuity) {
+std::tuple<std::vector<std::string>, std::vector<double>, std::vector<double>,
+           std::vector<double>, std::vector<double>>
+CreditCalc::Calculate(double sum, double rate, int term, bool is_annuity) {
   if (sum <= 0.0 || rate <= 0.0 || term <= 0) {
     throw std::invalid_argument("Invalid credit parameters");
   }
 
-  std::vector<double> payments;
+  std::vector<double> payments, principals, interests, balances;
   double monthly_rate = rate / 12.0 / 100.0;
+  std::vector<std::string> dates = GenerateDates(term);
 
   if (is_annuity) {
     payments = CalculateAnnuity(sum, monthly_rate, term);
@@ -35,10 +37,16 @@ std::tuple<std::vector<double>, double, double> CreditCalc::Calculate(
     payments = CalculateDifferentiated(sum, monthly_rate, term);
   }
 
-  double total_payment = std::accumulate(payments.begin(), payments.end(), 0.0);
-  double total_overpayment = total_payment - sum;
+  double balance = sum;
+  for (int i = 0; i < term; ++i) {
+    double interest = balance * monthly_rate;
+    double principal = payments[i] - interest;
+    interests.push_back(interest);
+    principals.push_back(principal);
+    balances.push_back(balance -= principal);
+  }
 
-  return std::make_tuple(payments, total_overpayment, total_payment);
+  return std::make_tuple(dates, payments, principals, interests, balances);
 }
 
 /**
@@ -82,18 +90,57 @@ std::vector<double> CreditCalc::CalculateDifferentiated(double sum,
                                                         double monthly_rate,
                                                         int term) {
   std::vector<double> payments;
-  double monthly_principal = sum / term;
-  double remaining_balance = sum;
+  double principal = sum / term;
+  double balance = sum;
 
   for (int i = 0; i < term; ++i) {
-    double monthly_interest = remaining_balance * monthly_rate;
-    double monthly_payment =
-        std::round((monthly_principal + monthly_interest) * 100.0) / 100.0;
+    double interest = balance * monthly_rate;
+    double monthly_payment = std::round((principal + interest) * 100.0) / 100.0;
     payments.push_back(monthly_payment);
-    remaining_balance -= monthly_principal;
+    balance -= principal;
   }
 
   return payments;
+}
+
+/**
+ * @brief Generates a sequence of dates in the format "Month Year" starting from
+ * the current date and extending for the specified number of months forward.
+ *
+ * This method creates a vector of strings representing months and years,
+ * starting from the current date, and incrementing months for the specified
+ * number of months forward.
+ *
+ * @param term The number of months in the sequence.
+ * @return A vector of strings containing months and years in the format "Month
+ * Year".
+ */
+std::vector<std::string> CreditCalc::GenerateDates(int term) {
+  std::vector<std::string> dates;
+  auto time =
+      std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+  std::tm* date = std::localtime(&time);
+  int month = date->tm_mon;
+  int year = date->tm_year + 1900;
+
+  for (int i = 0; i < term; ++i) {
+    std::stringstream ss;
+    ss << std::put_time(date, "%B %Y");
+    dates.push_back(ss.str());
+
+    ++month;
+    if (month >= 12) {
+      month = 0;
+      ++year;
+    }
+
+    date->tm_mon = month;
+    date->tm_year = year - 1900;
+    time = std::mktime(date);
+    date = std::localtime(&time);
+  }
+
+  return dates;
 }
 
 }  // namespace s21

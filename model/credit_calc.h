@@ -1,9 +1,11 @@
 #ifndef SMARTCALC_MODEL_CREDIT_CALC_H_
 #define SMARTCALC_MODEL_CREDIT_CALC_H_
 
+#include <chrono>
 #include <cmath>
-#include <numeric>
+#include <iomanip>
 #include <stdexcept>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -20,8 +22,10 @@ namespace s21 {
  */
 class CreditCalc {
  public:
-  static std::tuple<std::vector<double>, double, double> Calculate(
-      double sum, double rate, int term, bool is_annuity);
+  static std::tuple<std::vector<std::string>, std::vector<double>,
+                    std::vector<double>, std::vector<double>,
+                    std::vector<double>>
+  Calculate(double sum, double rate, int term, bool is_annuity);
 
  private:
   static std::vector<double> CalculateAnnuity(double sum, double monthly_rate,
@@ -29,6 +33,8 @@ class CreditCalc {
   static std::vector<double> CalculateDifferentiated(double sum,
                                                      double monthly_rate,
                                                      int term);
+
+  static std::vector<std::string> GenerateDates(int term);
 };
 }  // namespace s21
 
