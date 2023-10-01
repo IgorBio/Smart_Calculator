@@ -4,9 +4,9 @@
 #include <chrono>
 #include <cmath>
 #include <iomanip>
+#include <sstream>
 #include <stdexcept>
 #include <string>
-#include <tuple>
 #include <vector>
 
 namespace s21 {
@@ -22,18 +22,44 @@ namespace s21 {
  */
 class CreditCalc {
  public:
-  static std::tuple<std::vector<std::string>, std::vector<double>,
-                    std::vector<double>, std::vector<double>,
-                    std::vector<double>>
-  Calculate(double sum, double rate, int term, bool is_annuity);
+  enum class CreditType { kAnnuity, kDifferentiated };
+
+  /**
+   * @struct CreditParams
+   * @brief Structure for holding credit parameters.
+   *
+   * This structure encapsulates the parameters required for credit
+   * calculations, including the principal loan amount, annual interest rate,
+   * loan term in months, and the type of credit (annuity or differentiated).
+   */
+  struct CreditParams {
+    double sum;
+    double rate;
+    int term;
+    CreditType type;
+  };
+
+  /**
+   * @struct PaymentPlan
+   * @brief Structure for holding payment plan details.
+   *
+   * This structure stores the details of the credit payment plan, including
+   * dates, monthly payments, principal amounts, interest amounts, and remaining
+   * balances.
+   */
+  struct PaymentPlan {
+    std::vector<std::string> dates;
+    std::vector<double> payments;
+    std::vector<double> principals;
+    std::vector<double> interests;
+    std::vector<double> balances;
+  };
+
+  static PaymentPlan Calculate(CreditParams& params);
 
  private:
-  static std::vector<double> CalculateAnnuity(double sum, double monthly_rate,
-                                              int term);
-  static std::vector<double> CalculateDifferentiated(double sum,
-                                                     double monthly_rate,
-                                                     int term);
-
+  static std::vector<double> CalculateAnnuity(CreditParams& params);
+  static std::vector<double> CalculateDifferentiated(CreditParams& params);
   static std::vector<std::string> GenerateDates(int term);
 };
 }  // namespace s21

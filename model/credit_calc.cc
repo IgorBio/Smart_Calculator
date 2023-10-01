@@ -3,50 +3,40 @@
 namespace s21 {
 
 /**
- * @brief Calculate credit payments, overpayment and total payment.
+ * @brief Calculate credit payment details based on the provided parameters.
  *
  * This method calculates either annuity or differentiated credit payments
  * based on the provided credit parameters.
  *
- * @param sum The principal loan amount.
- * @param rate The annual interest rate (in percentage).
- * @param term The loan term in months.
- * @param is_annuity Set to true for annuity payments, false for differentiated.
- *
- * @return A tuple containing:
- *   - A vector of monthly payments.
- *   - The total overpayment (interest paid).
- *   - The total payment (including the principal).
- *
+ * @param params The credit parameters including sum, rate, term, and type.
+ * @return A PaymentPlan structure containing payment details.
  * @throws std::invalid_argument if any of the input parameters are invalid.
  */
-std::tuple<std::vector<std::string>, std::vector<double>, std::vector<double>,
-           std::vector<double>, std::vector<double>>
-CreditCalc::Calculate(double sum, double rate, int term, bool is_annuity) {
-  if (sum <= 0.0 || rate <= 0.0 || term <= 0) {
+CreditCalc::PaymentPlan CreditCalc::Calculate(CreditParams& params) {
+  if (params.sum <= 0.0 || params.rate <= 0.0 || params.term <= 0) {
     throw std::invalid_argument("Invalid credit parameters");
   }
 
-  std::vector<double> payments, principals, interests, balances;
-  double monthly_rate = rate / 12.0 / 100.0;
-  std::vector<std::string> dates = GenerateDates(term);
+  PaymentPlan plan;
+  double monthly_rate = params.rate / 12.0 / 100.0;
+  plan.dates = GenerateDates(params.term);
 
-  if (is_annuity) {
-    payments = CalculateAnnuity(sum, monthly_rate, term);
+  if (params.type == CreditType::kAnnuity) {
+    plan.payments = CalculateAnnuity(params);
   } else {
-    payments = CalculateDifferentiated(sum, monthly_rate, term);
+    plan.payments = CalculateDifferentiated(params);
   }
 
-  double balance = sum;
-  for (int i = 0; i < term; ++i) {
+  double balance = params.sum;
+  for (int i = 0; i < params.term; ++i) {
     double interest = balance * monthly_rate;
-    double principal = payments[i] - interest;
-    interests.push_back(interest);
-    principals.push_back(principal);
-    balances.push_back(balance -= principal);
+    double principal = plan.payments[i] - interest;
+    plan.interests.push_back(interest);
+    plan.principals.push_back(principal);
+    plan.balances.push_back(balance -= principal);
   }
 
-  return std::make_tuple(dates, payments, principals, interests, balances);
+  return plan;
 }
 
 /**
@@ -55,21 +45,18 @@ CreditCalc::Calculate(double sum, double rate, int term, bool is_annuity) {
  * This method calculates annuity credit payments based on the provided credit
  * parameters.
  *
- * @param sum The principal loan amount.
- * @param monthly_rate The monthly interest rate (decimal).
- * @param term The loan term in months.
- *
- * @return A vector of monthly payments, each rounded to two decimal places.
+ * @param params The credit parameters including sum, rate, and term.
+ * @return A vector of monthly payments.
  */
-std::vector<double> CreditCalc::CalculateAnnuity(double sum,
-                                                 double monthly_rate,
-                                                 int term) {
+std::vector<double> CreditCalc::CalculateAnnuity(CreditParams& params) {
   std::vector<double> payments;
-  double monthly_payment = sum *
-                           (monthly_rate * std::pow(1 + monthly_rate, term)) /
-                           (std::pow(1 + monthly_rate, term) - 1);
+  double monthly_payment =
+      params.sum *
+      (params.rate / 12.0 / 100.0 *
+       std::pow(1 + params.rate / 12.0 / 100.0, params.term)) /
+      (std::pow(1 + params.rate / 12.0 / 100.0, params.term) - 1);
   monthly_payment = std::round(monthly_payment * 100.0) / 100.0;
-  payments.resize(term, monthly_payment);
+  payments.resize(params.term, monthly_payment);
   return payments;
 }
 
@@ -77,24 +64,18 @@ std::vector<double> CreditCalc::CalculateAnnuity(double sum,
  * @brief Calculate differentiated credit payments.
  *
  * This method calculates differentiated credit payments based on the provided
- * credit parameters. Differentiated payments consist of varying principal and
- * interest amounts over the loan term.
+ * credit parameters.
  *
- * @param sum The principal loan amount.
- * @param monthly_rate The monthly interest rate (decimal).
- * @param term The loan term in months.
- *
- * @return A vector of monthly payments, each rounded to two decimal places.
+ * @param params The credit parameters including sum, rate, and term.
+ * @return A vector of monthly payments.
  */
-std::vector<double> CreditCalc::CalculateDifferentiated(double sum,
-                                                        double monthly_rate,
-                                                        int term) {
+std::vector<double> CreditCalc::CalculateDifferentiated(CreditParams& params) {
   std::vector<double> payments;
-  double principal = sum / term;
-  double balance = sum;
+  double principal = params.sum / params.term;
+  double balance = params.sum;
 
-  for (int i = 0; i < term; ++i) {
-    double interest = balance * monthly_rate;
+  for (int i = 0; i < params.term; ++i) {
+    double interest = balance * params.rate / 12.0 / 100.0;
     double monthly_payment = std::round((principal + interest) * 100.0) / 100.0;
     payments.push_back(monthly_payment);
     balance -= principal;
@@ -104,16 +85,12 @@ std::vector<double> CreditCalc::CalculateDifferentiated(double sum,
 }
 
 /**
- * @brief Generates a sequence of dates in the format "Month Year" starting from
- * the current date and extending for the specified number of months forward.
+ * @brief Generate dates for the credit payment plan.
  *
- * This method creates a vector of strings representing months and years,
- * starting from the current date, and incrementing months for the specified
- * number of months forward.
+ * This method generates dates for each payment in the credit payment plan.
  *
- * @param term The number of months in the sequence.
- * @return A vector of strings containing months and years in the format "Month
- * Year".
+ * @param term The loan term in months.
+ * @return A vector of strings representing dates in the format "Month Year".
  */
 std::vector<std::string> CreditCalc::GenerateDates(int term) {
   std::vector<std::string> dates;
