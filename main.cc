@@ -1,20 +1,14 @@
 #include <iostream>
 
-#include "model/math_calc.h"
+#include "model/deposit_calc.h"
 
 using namespace s21;
 
 int main() {
-  std::string expression = "  x 55";
+  std::string date1 = "01-02-2023";
 
-  std::vector<Token> tokens = MathCalc::ParseExpression(expression);
+  std::string date2 = DepositCalc::AddDays(date1, 59);
 
-  for (const Token& token : tokens) {
-    std::cout << "Type: " << static_cast<int>(token.GetType())
-              << "\tValue: " << token.GetToken()
-              << "\tPriority: " << token.GetPriority() << std::endl;
-  }
-
-  std::cout << MathCalc::Calculate(expression, 1) << "\n";
+  std::cout << date2 << "\n";
   return 0;
 }

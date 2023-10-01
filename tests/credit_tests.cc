@@ -7,15 +7,15 @@
 using namespace s21;
 
 TEST(CreditCalcTest, AnnuityCredit) {
-  CreditCalc::CreditParams params{.sum = 2800000.0,
-                                  .rate = 5.0,
-                                  .term = 60,
-                                  .type = CreditCalc::CreditType::kAnnuity};
+  CreditCalc::CreditInfo info{.sum = 2800000.0,
+                              .rate = 5.0,
+                              .term = 60,
+                              .type = CreditCalc::CreditType::kAnnuity};
 
-  auto plan = CreditCalc::Calculate(params);
+  auto plan = CreditCalc::Calculate(info);
   double total_payment =
       std::accumulate(plan.payments.begin(), plan.payments.end(), 0.0);
-  double overpayment = total_payment - params.sum;
+  double overpayment = total_payment - info.sum;
 
   EXPECT_NEAR(plan.payments[0], 52839.45, 1e-2);
   EXPECT_NEAR(plan.payments[59], 52839.45, 1e-2);
@@ -30,16 +30,15 @@ TEST(CreditCalcTest, AnnuityCredit) {
 }
 
 TEST(CreditCalcTest, DifferentiatedCredit) {
-  CreditCalc::CreditParams params{
-      .sum = 2800000.0,
-      .rate = 5.0,
-      .term = 60,
-      .type = CreditCalc::CreditType::kDifferentiated};
+  CreditCalc::CreditInfo info{.sum = 2800000.0,
+                              .rate = 5.0,
+                              .term = 60,
+                              .type = CreditCalc::CreditType::kDifferentiated};
 
-  auto plan = CreditCalc::Calculate(params);
+  auto plan = CreditCalc::Calculate(info);
   double total_payment =
       std::accumulate(plan.payments.begin(), plan.payments.end(), 0.0);
-  double overpayment = total_payment - params.sum;
+  double overpayment = total_payment - info.sum;
 
   EXPECT_NEAR(plan.payments[0], 58333.33, 1e-2);
   EXPECT_NEAR(plan.payments[59], 46861.11, 1e-2);

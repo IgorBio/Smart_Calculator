@@ -8,27 +8,27 @@ namespace s21 {
  * This method calculates either annuity or differentiated credit payments
  * based on the provided credit parameters.
  *
- * @param params The credit parameters including sum, rate, term, and type.
+ * @param info The credit parameters including sum, rate, term, and type.
  * @return A PaymentPlan structure containing payment details.
  * @throws std::invalid_argument if any of the input parameters are invalid.
  */
-CreditCalc::PaymentPlan CreditCalc::Calculate(CreditParams& params) {
-  if (params.sum <= 0.0 || params.rate <= 0.0 || params.term <= 0) {
+CreditCalc::PaymentPlan CreditCalc::Calculate(const CreditInfo& info) {
+  if (info.sum <= 0.0 || info.rate <= 0.0 || info.term <= 0) {
     throw std::invalid_argument("Invalid credit parameters");
   }
 
   PaymentPlan plan;
-  double monthly_rate = params.rate / 12.0 / 100.0;
-  plan.dates = GenerateDates(params.term);
+  double monthly_rate = info.rate / 12.0 / 100.0;
+  plan.dates = GenerateDates(info.term);
 
-  if (params.type == CreditType::kAnnuity) {
-    plan.payments = CalculateAnnuity(params);
+  if (info.type == CreditType::kAnnuity) {
+    plan.payments = CalculateAnnuity(info);
   } else {
-    plan.payments = CalculateDifferentiated(params);
+    plan.payments = CalculateDifferentiated(info);
   }
 
-  double balance = params.sum;
-  for (int i = 0; i < params.term; ++i) {
+  double balance = info.sum;
+  for (int i = 0; i < info.term; ++i) {
     double interest = balance * monthly_rate;
     double principal = plan.payments[i] - interest;
     plan.interests.push_back(interest);
@@ -45,18 +45,18 @@ CreditCalc::PaymentPlan CreditCalc::Calculate(CreditParams& params) {
  * This method calculates annuity credit payments based on the provided credit
  * parameters.
  *
- * @param params The credit parameters including sum, rate, and term.
+ * @param info The credit parameters including sum, rate, and term.
  * @return A vector of monthly payments.
  */
-std::vector<double> CreditCalc::CalculateAnnuity(CreditParams& params) {
+std::vector<double> CreditCalc::CalculateAnnuity(const CreditInfo& info) {
   std::vector<double> payments;
   double monthly_payment =
-      params.sum *
-      (params.rate / 12.0 / 100.0 *
-       std::pow(1 + params.rate / 12.0 / 100.0, params.term)) /
-      (std::pow(1 + params.rate / 12.0 / 100.0, params.term) - 1);
+      info.sum *
+      (info.rate / 12.0 / 100.0 *
+       std::pow(1 + info.rate / 12.0 / 100.0, info.term)) /
+      (std::pow(1 + info.rate / 12.0 / 100.0, info.term) - 1);
   monthly_payment = std::round(monthly_payment * 100.0) / 100.0;
-  payments.resize(params.term, monthly_payment);
+  payments.resize(info.term, monthly_payment);
   return payments;
 }
 
@@ -66,16 +66,17 @@ std::vector<double> CreditCalc::CalculateAnnuity(CreditParams& params) {
  * This method calculates differentiated credit payments based on the provided
  * credit parameters.
  *
- * @param params The credit parameters including sum, rate, and term.
+ * @param info The credit parameters including sum, rate, and term.
  * @return A vector of monthly payments.
  */
-std::vector<double> CreditCalc::CalculateDifferentiated(CreditParams& params) {
+std::vector<double> CreditCalc::CalculateDifferentiated(
+    const CreditInfo& info) {
   std::vector<double> payments;
-  double principal = params.sum / params.term;
-  double balance = params.sum;
+  double principal = info.sum / info.term;
+  double balance = info.sum;
 
-  for (int i = 0; i < params.term; ++i) {
-    double interest = balance * params.rate / 12.0 / 100.0;
+  for (int i = 0; i < info.term; ++i) {
+    double interest = balance * info.rate / 12.0 / 100.0;
     double monthly_payment = std::round((principal + interest) * 100.0) / 100.0;
     payments.push_back(monthly_payment);
     balance -= principal;

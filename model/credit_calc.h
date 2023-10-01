@@ -5,7 +5,6 @@
 #include <cmath>
 #include <iomanip>
 #include <sstream>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -25,14 +24,14 @@ class CreditCalc {
   enum class CreditType { kAnnuity, kDifferentiated };
 
   /**
-   * @struct CreditParams
+   * @struct CreditInfo
    * @brief Structure for holding credit parameters.
    *
    * This structure encapsulates the parameters required for credit
    * calculations, including the principal loan amount, annual interest rate,
    * loan term in months, and the type of credit (annuity or differentiated).
    */
-  struct CreditParams {
+  struct CreditInfo {
     double sum;
     double rate;
     int term;
@@ -55,11 +54,11 @@ class CreditCalc {
     std::vector<double> balances;
   };
 
-  static PaymentPlan Calculate(CreditParams& params);
+  static PaymentPlan Calculate(const CreditInfo& info);
 
  private:
-  static std::vector<double> CalculateAnnuity(CreditParams& params);
-  static std::vector<double> CalculateDifferentiated(CreditParams& params);
+  static std::vector<double> CalculateAnnuity(const CreditInfo& info);
+  static std::vector<double> CalculateDifferentiated(const CreditInfo& info);
   static std::vector<std::string> GenerateDates(int term);
 };
 }  // namespace s21
