@@ -7,10 +7,8 @@
 using namespace s21;
 
 TEST(CreditCalcTest, AnnuityCredit) {
-  CreditCalc::CreditInfo info{.sum = 2800000.0,
-                              .rate = 5.0,
-                              .term = 60,
-                              .type = CreditCalc::CreditType::kAnnuity};
+  CreditCalc::CreditInfo info{2800000.0, 5.0, 60,
+                              CreditCalc::CreditType::kAnnuity};
 
   auto plan = CreditCalc::Calculate(info);
   double total_payment =
@@ -30,10 +28,8 @@ TEST(CreditCalcTest, AnnuityCredit) {
 }
 
 TEST(CreditCalcTest, DifferentiatedCredit) {
-  CreditCalc::CreditInfo info{.sum = 2800000.0,
-                              .rate = 5.0,
-                              .term = 60,
-                              .type = CreditCalc::CreditType::kDifferentiated};
+  CreditCalc::CreditInfo info{2800000.0, 5.0, 60,
+                              CreditCalc::CreditType::kDifferentiated};
 
   auto plan = CreditCalc::Calculate(info);
   double total_payment =
