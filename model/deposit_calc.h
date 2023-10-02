@@ -111,14 +111,24 @@ class DepositCalc {
   static PaymentPlan Calculate(const DepositInfo& info);
 
  public:
+  static constexpr int kSecondsPerDay = 24 * 60 * 60;
   static std::vector<std::string> GenerateInterestDates(
       const DepositInfo& info);
   static std::vector<std::pair<std::string, double>> GenerateTransactions(
       const DepositInfo& info);
+  static double CalculateInterest(const std::string& date1,
+                                  const std::string& date2, double rate,
+                                  double balance);
   static std::tm StringToDate(const std::string& date);
   static int TermToDays(const std::string& date, int term);
   static std::string AddDays(const std::string& date, int days);
   static std::string AddMonths(const std::string& date, int months);
+  static int CompareDates(const std::string& date1, const std::string& date2);
+  static int DaysBetweenDates(const std::string& date1,
+                              const std::string& date2);
+  static int DaysInCurrentYear(const std::string& date);
+  static std::string FindNextYear(const std::string& date);
+  static std::string FindNextDay(const std::string& date);
 };
 }  // namespace s21
 

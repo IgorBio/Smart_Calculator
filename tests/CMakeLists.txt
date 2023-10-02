@@ -24,8 +24,10 @@ include_directories(
 add_executable(${PROJECT_NAME}
   ${PROJECT_SOURCE_DIR}/../model/math_calc.cc
   ${PROJECT_SOURCE_DIR}/../model/credit_calc.cc
+  ${PROJECT_SOURCE_DIR}/../model/deposit_calc.cc
   math_tests.cc
   credit_tests.cc
+  deposit_tests.cc
 )
 
 enable_testing()
