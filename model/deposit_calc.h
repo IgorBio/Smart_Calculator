@@ -128,7 +128,6 @@ class DepositCalc {
                               const std::string& date2);
   static int DaysInCurrentYear(const std::string& date);
   static std::string FindNextYear(const std::string& date);
-  static std::string FindNextDay(const std::string& date);
 };
 }  // namespace s21
 

@@ -1,5 +1,7 @@
 #include "deposit_calc.h"
 
+#include <iostream>
+
 namespace s21 {
 
 /**
@@ -13,67 +15,6 @@ namespace s21 {
  * rate, payment period, capitalization, replenishments, and withdrawals.
  * @return A PaymentPlan structure containing payment plan details.
  */
-// DepositCalc::PaymentPlan DepositCalc::Calculate(const DepositInfo& info) {
-//   PaymentPlan plan;
-//   std::vector<std::string> interest_dates = GenerateInterestDates(info);
-//   std::vector<std::pair<std::string, double>> transactions =
-//       GenerateTransactions(info);
-
-//   plan.dates.push_back(info.date);
-//   plan.balances.push_back(info.sum);
-//   auto interests_it = interest_dates.begin();
-//   auto transactions_it = transactions.begin();
-
-//   double balance = info.sum;
-
-//   while (interests_it != interest_dates.end() &&
-//          transactions_it != transactions.end()) {
-//     std::string interest_date = *interests_it;
-//     std::pair<std::string, double> transaction = *transactions_it;
-
-//     if (CompareDates(interest_date, transaction.first) <= 0) {
-//       plan.dates.push_back(interest_date);
-//       double interest = CalculateInterest(plan.dates.back(), interest_date,
-//                                           info.rate, balance);
-//       plan.interests.push_back(interest);
-//       balance += interest;
-//       plan.transactions.push_back(0.0);
-//       plan.balances.push_back(balance);
-//       ++interests_it;
-//     } else {
-//       plan.dates.push_back(transaction.first);
-//       plan.interests.push_back(0.0);
-//       plan.transactions.push_back(transaction.second);
-//       balance += transaction.second;
-//       plan.balances.push_back(balance);
-//       ++transactions_it;
-//     }
-//   }
-
-//   while (interests_it != interest_dates.end()) {
-//     plan.dates.push_back(*interests_it);
-//     double interest =
-//         CalculateInterest(plan.dates.back(), *interests_it, info.rate,
-//         balance);
-//     plan.interests.push_back(interest);
-//     balance += interest;
-//     plan.transactions.push_back(0.0);
-//     plan.balances.push_back(balance);
-//     ++interests_it;
-//   }
-
-//   while (transactions_it != transactions.end()) {
-//     plan.dates.push_back(transactions_it->first);
-//     plan.interests.push_back(0.0);
-//     plan.transactions.push_back(transactions_it->second);
-//     balance += transactions_it->second;
-//     plan.balances.push_back(balance);
-//     ++transactions_it;
-//   }
-
-//   return plan;
-// }
-
 DepositCalc::PaymentPlan DepositCalc::Calculate(const DepositInfo& info) {
   PaymentPlan plan;
   std::vector<std::string> interest_dates = GenerateInterestDates(info);
@@ -117,7 +58,11 @@ DepositCalc::PaymentPlan DepositCalc::Calculate(const DepositInfo& info) {
     plan.dates.push_back(current_date);
     plan.interests.push_back(interest);
     plan.transactions.push_back(transaction);
-    balance += interest + transaction;
+    if (info.capitalize) {
+      balance += interest + transaction;
+    } else {
+      balance += transaction;
+    }
     plan.balances.push_back(balance);
     prev_date = current_date;
   }
@@ -128,9 +73,10 @@ DepositCalc::PaymentPlan DepositCalc::Calculate(const DepositInfo& info) {
 std::vector<std::string> DepositCalc::GenerateInterestDates(
     const DepositInfo& info) {
   std::vector<std::string> interest_dates;
+  std::string date = info.date;
 
   if (info.period == PaymentPeriod::kAtMaturity) {
-    interest_dates.push_back(info.date);
+    interest_dates.push_back(date);
   } else if (info.period == PaymentPeriod::kDaily) {
     int days = TermToDays(info.date, info.term);
     for (int delta = 0; delta < days; ++delta) {
@@ -143,19 +89,23 @@ std::vector<std::string> DepositCalc::GenerateInterestDates(
     }
   } else if (info.period == PaymentPeriod::kMonthly) {
     for (int delta = 0; delta < info.term; ++delta) {
-      interest_dates.push_back(AddMonths(info.date, delta));
+      interest_dates.push_back(date);
+      date = AddMonths(date, 1);
     }
   } else if (info.period == PaymentPeriod::kQuarterly) {
     for (int delta = 0; delta < info.term; delta += 3) {
-      interest_dates.push_back(AddMonths(info.date, delta));
+      interest_dates.push_back(date);
+      date = AddMonths(date, 3);
     }
   } else if (info.period == PaymentPeriod::kSemiAnnually) {
     for (int delta = 0; delta < info.term; delta += 6) {
-      interest_dates.push_back(AddMonths(info.date, delta));
+      interest_dates.push_back(date);
+      date = AddMonths(date, 6);
     }
   } else if (info.period == PaymentPeriod::kAnnually) {
     for (int delta = 0; delta < info.term; delta += 12) {
-      interest_dates.push_back(AddMonths(info.date, delta));
+      interest_dates.push_back(date);
+      date = AddMonths(date, 12);
     }
   }
   interest_dates.push_back(AddMonths(info.date, info.term));
@@ -204,17 +154,16 @@ double DepositCalc::CalculateInterest(const std::string& date1,
   double total_interest = 0.0;
   std::string current_date = date1;
 
-  while (CompareDates(current_date, date2) <= 0) {
+  while (CompareDates(current_date, date2) < 0) {
     std::string next_date = FindNextYear(current_date);
-    if (CompareDates(next_date, date2) == 1) {
+    if (CompareDates(next_date, date2) >= 0) {
       next_date = date2;
     }
 
     int days_in_interval = DaysBetweenDates(current_date, next_date);
     total_interest += balance * days_in_interval * rate / 100 /
                       DaysInCurrentYear(current_date);
-
-    current_date = FindNextDay(next_date);
+    current_date = next_date;
   }
 
   return std::round(total_interest * 100) / 100;
@@ -319,6 +268,7 @@ int DepositCalc::DaysBetweenDates(const std::string& date1,
 
 int DepositCalc::DaysInCurrentYear(const std::string& date) {
   std::tm tm = StringToDate(date);
+  if (tm.tm_mon == 11 && tm.tm_mday == 31) tm.tm_year += 1;
   int year = tm.tm_year + 1900;
 
   if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
@@ -330,21 +280,9 @@ int DepositCalc::DaysInCurrentYear(const std::string& date) {
 
 std::string DepositCalc::FindNextYear(const std::string& date) {
   std::tm tm = StringToDate(date);
-  tm.tm_year += 1;
-  tm.tm_mon = 0;
-  tm.tm_mday = 1;
-
-  std::time_t new_time = std::mktime(&tm);
-  std::tm* new_tm = std::localtime(&new_time);
-
-  std::ostringstream oss;
-  oss << std::put_time(new_tm, "%d-%m-%Y");
-  return oss.str();
-}
-
-std::string DepositCalc::FindNextDay(const std::string& date) {
-  std::tm tm = StringToDate(date);
-  tm.tm_mday += 1;
+  if (tm.tm_mon == 11 && tm.tm_mday == 31) tm.tm_year += 1;
+  tm.tm_mon = 11;
+  tm.tm_mday = 31;
 
   std::time_t new_time = std::mktime(&tm);
   std::tm* new_tm = std::localtime(&new_time);
