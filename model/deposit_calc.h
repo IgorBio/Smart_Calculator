@@ -90,8 +90,8 @@ class DepositCalc {
     std::string year;
     double income;
     double deduction = kTaxDeduction;
-    double income_after_deduction;
-    double tax_amount;
+    double deduction_income;
+    double tax_sum;
     std::string pay_before;
   };
 
@@ -127,6 +127,7 @@ class DepositCalc {
   static PaymentPlan Calculate(const DepositInfo& info);
   static std::string PlanToString(const PaymentPlan& plan,
                                   const DepositInfo& info);
+  static std::string TaxToString(const std::vector<TaxInfo>& tax_info);
 
  private:
   static constexpr int kSecondsPerDay = 24 * 60 * 60;
@@ -150,7 +151,10 @@ class DepositCalc {
   static int DaysBetweenDates(const std::string& date1,
                               const std::string& date2);
   static std::string FindNextYear(const std::string& date);
+  static std::string ExtractYear(const std::string& date);
   static bool IsLeapYear(int year);
+  static std::vector<TaxInfo> CalculateTax(const PaymentPlan& plan,
+                                           const DepositInfo& info);
 };
 }  // namespace s21
 

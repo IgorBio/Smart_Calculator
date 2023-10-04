@@ -79,6 +79,7 @@ DepositCalc::PaymentPlan DepositCalc::Calculate(const DepositInfo& info) {
     prev_date = current_date;
   }
   plan.transactions[0] += info.sum;
+  plan.tax_info = CalculateTax(plan, info);
 
   return plan;
 }
@@ -528,6 +529,81 @@ std::string DepositCalc::FindNextYear(const std::string& date) {
 }
 
 /**
+ * @brief Extracts the year from a date string in the format "dd-mm-yyyy".
+ *
+ * @param date The date string in the format "dd-mm-yyyy".
+ * @return std::string The extracted year as a string.
+ * @throws std::runtime_error If the input date format is invalid.
+ */
+std::string DepositCalc::ExtractYear(const std::string& date) {
+  std::istringstream ss(date);
+  std::tm tm = {};
+  ss >> std::get_time(&tm, "%d-%m-%Y");
+  if (ss.fail()) {
+    throw std::runtime_error("Invalid date format");
+  }
+  std::ostringstream oss;
+  oss << std::put_time(&tm, "%Y");
+  return oss.str();
+}
+
+/**
+ * @brief Calculates the tax information for each year within the payment plan
+ * period.
+ *
+ * This function takes the payment plan and calculates the tax information for
+ * each year within the payment period. It considers the income, deductions, tax
+ * amount, and the date of the final payment for each year.
+ *
+ * @param plan The payment plan containing dates, interest accrued, transaction
+ * amounts, and balances.
+ * @return std::vector<TaxInfo> A vector of TaxInfo structures, each
+ * representing the tax information for a specific year.
+ */
+std::vector<DepositCalc::TaxInfo> DepositCalc::CalculateTax(
+    const PaymentPlan& plan, const DepositInfo& info) {
+  std::vector<TaxInfo> tax_info;
+  if (plan.dates.empty()) {
+    return tax_info;
+  }
+
+  double income = 0.0;
+  std::string current_year = ExtractYear(plan.dates.front());
+
+  for (std::size_t i = 0; i < plan.dates.size(); ++i) {
+    std::string year = ExtractYear(plan.dates[i]);
+    if (current_year == year) {
+      income += plan.interests[i];
+    } else {
+      if (income > 0) {
+        TaxInfo tax;
+        tax.year = current_year;
+        tax.income = income;
+        tax.deduction_income = std::max(0.0, tax.income - tax.deduction);
+        tax.tax_sum = std::round(tax.deduction_income * info.tax_rate) / 100;
+        tax.pay_before = tax.tax_sum > 0 ? "1 December " + year : "";
+        tax_info.push_back(tax);
+      }
+
+      income = 0.0;
+      current_year = year;
+    }
+  }
+  TaxInfo tax;
+  tax.year = current_year;
+  tax.income = income;
+  tax.deduction_income = std::max(0.0, tax.income - tax.deduction);
+  tax.tax_sum = std::round(tax.deduction_income * info.tax_rate) / 100;
+  tax.pay_before =
+      tax.tax_sum > 0
+          ? "1 December " + std::to_string(std::stoi(current_year) + 1)
+          : "";
+  tax_info.push_back(tax);
+
+  return tax_info;
+}
+
+/**
  * @brief Converts the payment plan data into a formatted string representation.
  *
  * This function takes the payment plan information and the deposit information
@@ -550,7 +626,7 @@ std::string DepositCalc::PlanToString(const PaymentPlan& plan,
       << std::setw(20) << std::left << "Payout" << std::setw(20) << std::left
       << "Balance" << std::endl;
 
-  for (size_t i = 0; i < plan.dates.size(); ++i) {
+  for (std::size_t i = 0; i < plan.dates.size(); ++i) {
     oss << std::setw(15) << std::left << plan.dates[i] << std::fixed
         << std::setprecision(2) << std::setw(20) << std::left
         << plan.interests[i];
@@ -558,12 +634,10 @@ std::string DepositCalc::PlanToString(const PaymentPlan& plan,
     double balance_change = info.capitalize
                                 ? (plan.transactions[i] + plan.interests[i])
                                 : plan.transactions[i];
-    std::string payout =
-        info.capitalize ? "-" : std::to_string(plan.interests[i]);
 
     oss << std::setw(25) << std::left << balance_change << std::setw(20)
-        << std::left << payout << std::setw(20) << std::left << plan.balances[i]
-        << std::endl;
+        << std::left << plan.interests[i] << std::setw(20) << std::left
+        << plan.balances[i] << std::endl;
   }
 
   double total_interest =
@@ -573,6 +647,37 @@ std::string DepositCalc::PlanToString(const PaymentPlan& plan,
       << std::setprecision(2) << std::setw(20) << std::left << total_interest
       << std::setw(25) << std::left << "-" << std::setw(20) << std::left << "-"
       << std::setw(20) << std::left << plan.balances.back() << std::endl;
+
+  return oss.str();
+}
+
+/**
+ * @brief Converts tax information to a formatted string.
+ *
+ * This function takes a vector of TaxInfo structures and converts the tax
+ * information to a formatted string with columns: Year, Income, Deduction,
+ * Income after deduction, Tax amount, and Pay before.
+ *
+ * @param tax_info Vector of TaxInfo structures containing tax information.
+ * @return std::string Formatted string with tax information in columns.
+ */
+std::string DepositCalc::TaxToString(const std::vector<TaxInfo>& tax_info) {
+  std::ostringstream oss;
+  oss << std::setw(10) << std::left << "Year" << std::setw(15) << std::left
+      << "Income" << std::setw(15) << std::left << "Deduction" << std::setw(25)
+      << std::left << "Income after deduction" << std::setw(15) << std::left
+      << "Tax amount" << std::setw(20) << std::left << "Pay before"
+      << std::endl;
+
+  for (const auto& tax : tax_info) {
+    oss << std::setw(10) << std::left << tax.year << std::fixed
+        << std::setprecision(2) << std::setw(15) << std::left << tax.income
+        << std::fixed << std::setprecision(2) << std::setw(15) << std::left
+        << tax.deduction << std::fixed << std::setprecision(2) << std::setw(25)
+        << std::left << tax.deduction_income << std::fixed
+        << std::setprecision(2) << std::setw(15) << std::left << tax.tax_sum
+        << std::setw(20) << std::left << tax.pay_before << std::endl;
+  }
 
   return oss.str();
 }

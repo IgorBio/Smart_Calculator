@@ -283,11 +283,11 @@ TEST(DepositCalcTest, Transactions) {
 TEST(DepositCalcTest, PlanToString) {
   DepositCalc::DepositInfo info{
       870000.00,
-      12,
+      60,
       "30-10-2023",
       9,
       13,
-      DepositCalc::PaymentPeriod::kDaily,
+      DepositCalc::PaymentPeriod::kAnnually,
       true,
       {DepositCalc::Transaction{DepositCalc::Regularity::kOneTime, "31-12-2023",
                                 100000},
@@ -299,4 +299,5 @@ TEST(DepositCalcTest, PlanToString) {
   auto plan = DepositCalc::Calculate(info);
 
   // std::cout << DepositCalc::PlanToString(plan, info) << "\n";
+  std::cout << DepositCalc::TaxToString(plan.tax_info) << "\n";
 }
