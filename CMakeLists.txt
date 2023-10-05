@@ -40,11 +40,7 @@ set(SOURCES
 )
 
 set(FORMS
-        # ${PROJECT_SOURCE_DIR}/view/forms/main_window.ui
-        # ${PROJECT_SOURCE_DIR}/view/input_field/input_field.ui
-        # ${PROJECT_SOURCE_DIR}/view/input_field/point_selector.ui
-        # ${PROJECT_SOURCE_DIR}/view/control_panel/control_panel.ui
-        # ${PROJECT_SOURCE_DIR}/view/line_legend/line_legend.ui
+        ${PROJECT_SOURCE_DIR}/view/view.ui
 )
 
 set(PROJECT_SOURCES

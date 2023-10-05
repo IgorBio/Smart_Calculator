@@ -7,7 +7,9 @@ namespace s21 {
 View::View(std::unique_ptr<s21::Controller> controller, QWidget *parent)
     : QMainWindow(parent),
       ui_(new Ui::View),
-      controller_(std::move(controller)) {}
+      controller_(std::move(controller)) {
+  ui_->setupUi(this);
+}
 
 View::~View() { delete ui_; }
 
