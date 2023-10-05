@@ -579,6 +579,7 @@ std::vector<DepositCalc::TaxInfo> DepositCalc::CalculateTax(
         TaxInfo tax;
         tax.year = current_year;
         tax.income = income;
+        tax.deduction = kTaxDeduction;
         tax.deduction_income = std::max(0.0, tax.income - tax.deduction);
         tax.tax_sum = std::round(tax.deduction_income * info.tax_rate) / 100;
         tax.pay_before = tax.tax_sum > 0 ? "1 December " + year : "";
@@ -592,6 +593,7 @@ std::vector<DepositCalc::TaxInfo> DepositCalc::CalculateTax(
   TaxInfo tax;
   tax.year = current_year;
   tax.income = income;
+  tax.deduction = kTaxDeduction;
   tax.deduction_income = std::max(0.0, tax.income - tax.deduction);
   tax.tax_sum = std::round(tax.deduction_income * info.tax_rate) / 100;
   tax.pay_before =

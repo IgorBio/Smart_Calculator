@@ -12,9 +12,8 @@ namespace s21 {
  *
  * @param expression Mathematical expression as a string.
  */
-MathCalc::MathCalc(const std::string& expression) {
-  rpn_ = ConvertToRPN(ParseExpression(expression));
-}
+MathCalc::MathCalc(const std::string& expression)
+    : rpn_{ConvertToRPN(ParseExpression(expression))} {}
 
 /**
  * @brief Calculate the result of the mathematical expression with a given

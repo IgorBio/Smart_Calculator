@@ -1,14 +1,12 @@
-#include <iostream>
+#include <QApplication>
 
-#include "model/deposit_calc.h"
-
+#include "view.h"
 using namespace s21;
 
-int main() {
-  std::string date1 = "01-02-2023";
-
-  std::string date2 = DepositCalc::AddDays(date1, 59);
-
-  std::cout << date2 << "\n";
-  return 0;
+int main(int argc, char *argv[]) {
+  QApplication a(argc, argv);
+  std::unique_ptr<Controller> controller = std::make_unique<Controller>();
+  View w(std::move(controller));
+  w.show();
+  return QApplication::exec();
 }

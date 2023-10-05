@@ -299,5 +299,5 @@ TEST(DepositCalcTest, PlanToString) {
   auto plan = DepositCalc::Calculate(info);
 
   // std::cout << DepositCalc::PlanToString(plan, info) << "\n";
-  std::cout << DepositCalc::TaxToString(plan.tax_info) << "\n";
+  // std::cout << DepositCalc::TaxToString(plan.tax_info) << "\n";
 }

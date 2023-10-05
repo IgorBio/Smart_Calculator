@@ -89,7 +89,7 @@ class DepositCalc {
   struct TaxInfo {
     std::string year;
     double income;
-    double deduction = kTaxDeduction;
+    double deduction;
     double deduction_income;
     double tax_sum;
     std::string pay_before;
