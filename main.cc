@@ -4,9 +4,9 @@
 using namespace s21;
 
 int main(int argc, char *argv[]) {
-  QApplication a(argc, argv);
-  std::unique_ptr<Controller> controller = std::make_unique<Controller>();
-  View w(std::move(controller));
-  w.show();
+  setlocale(LC_ALL, "C");
+  QApplication app(argc, argv);
+  View view;
+  view.show();
   return QApplication::exec();
 }

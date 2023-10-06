@@ -44,26 +44,31 @@
      <height>601</height>
     </rect>
    </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
    <property name="styleSheet">
-    <string notr="true">QTabWidget::pane {
-	border: 1px;
-	background-color: rgba(29,38,51,255);
+    <string notr="true">QTabWidget::tab-bar {
+    alignment: center;
+}
+
+QTabWidget::pane {
+  border: 1px;
+  background-color: rgba(29,38,51,255);
 }
 
 QTabBar::tab {
-	font: 16pt;
-	background: rgba(29,38,51,255);
-	min-width: 13ex;
-	min-height: 8ex;
-	margin-left: 1px;
-	color: rgba(255,255,255,255);
+  font: 16pt;
+  background: rgba(29,38,51,255);
+  min-width: 13ex;
+  min-height: 6ex;
+  margin-left: 1px;
+  color: rgba(255,255,255,255)
 }
 
 QTabBar::tab::hover {
-	color: rgba(62,207,138,255);
-}
-
-</string>
+  color: rgba(62,207,138,255);
+}</string>
    </property>
    <property name="currentIndex">
     <number>0</number>
@@ -72,21 +77,6 @@ QTabBar::tab::hover {
     <attribute name="title">
      <string>Calculator</string>
     </attribute>
-    <widget class="QTextBrowser" name="text_out_calc">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>10</y>
-       <width>761</width>
-       <height>181</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(37,48,64,255);
-border-radius: 10px;
-border: 2px solid #253040;</string>
-     </property>
-    </widget>
     <widget class="Line" name="line_calc">
      <property name="geometry">
       <rect>
@@ -150,21 +140,6 @@ border-radius: 10px;
      </property>
      <property name="text">
       <string>=</string>
-     </property>
-    </widget>
-    <widget class="QTextBrowser" name="text_in_calc">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>30</y>
-       <width>721</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(44,56,73,255);
-border-radius: 10px;
-border: 2px solid #253040;</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_plus">
@@ -233,7 +208,7 @@ border-radius: 10px;
       <string>-</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="btn_del">
+    <widget class="QPushButton" name="btn_div">
      <property name="geometry">
       <rect>
        <x>660</x>
@@ -329,7 +304,7 @@ border-radius: 10px;
 }</string>
      </property>
      <property name="text">
-      <string>×</string>
+      <string>*</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_1">
@@ -461,7 +436,7 @@ border-radius: 10px;
 }</string>
      </property>
      <property name="text">
-      <string>exp</string>
+      <string>e</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_2">
@@ -1220,17 +1195,116 @@ border-radius: 10px;
 }</string>
      </property>
      <property name="text">
-      <string> 𝑥</string>
+      <string>x</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="display">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>30</y>
+       <width>720</width>
+       <height>60</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::RightToLeft</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20px;
+background-color: rgba(44,56,73,255);
+border-radius: 10px;
+border: 2px solid #253040;
+</string>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignBottom|Qt::AlignRight|Qt::AlignTrailing</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <property name="indent">
+      <number>5</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="display_res">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>10</y>
+       <width>760</width>
+       <height>180</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 26px;
+color: rgba(67,235,153,255);
+background-color: rgba(37,48,64,255);
+border-radius: 10px;
+border: 2px solid #253040;</string>
+     </property>
+     <property name="text">
+      <string>=0.00</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignBottom|Qt::AlignRight|Qt::AlignTrailing</set>
+     </property>
+     <property name="margin">
+      <number>16</number>
+     </property>
+     <property name="indent">
+      <number>0</number>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="x_value">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>220</y>
+       <width>251</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20px;
+background-color: rgba(44,56,73,255);
+border-radius: 10px;
+border: 2px solid #253040;</string>
+     </property>
+     <property name="frame">
+      <bool>true</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="buttonSymbols">
+      <enum>QAbstractSpinBox::NoButtons</enum>
+     </property>
+     <property name="decimals">
+      <number>6</number>
+     </property>
+     <property name="minimum">
+      <double>-100000000000000000000.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>100000000000000000000.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.100000000000000</double>
      </property>
     </widget>
     <zorder>line_calc</zorder>
     <zorder>line_gr_calc</zorder>
     <zorder>btn_equal</zorder>
-    <zorder>text_out_calc</zorder>
-    <zorder>text_in_calc</zorder>
     <zorder>btn_plus</zorder>
     <zorder>btn_minus</zorder>
-    <zorder>btn_del</zorder>
+    <zorder>btn_div</zorder>
     <zorder>btn_back</zorder>
     <zorder>btn_mul</zorder>
     <zorder>btn_1</zorder>
@@ -1260,6 +1334,9 @@ border-radius: 10px;
     <zorder>btn_mod</zorder>
     <zorder>btn_c</zorder>
     <zorder>btn_x</zorder>
+    <zorder>display_res</zorder>
+    <zorder>display</zorder>
+    <zorder>x_value</zorder>
    </widget>
    <widget class="QWidget" name="tab_graph">
     <attribute name="title">
@@ -1297,22 +1374,7 @@ border-radius: 10px;
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QTextBrowser" name="textBrowser_2">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>30</y>
-       <width>721</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(44,56,73,255);
-border-radius: 10px;
-border: 2px solid #253040;</string>
-     </property>
-    </widget>
-    <widget class="QTextBrowser" name="text_out_calc_2">
+    <widget class="QTextBrowser" name="text_out_graph">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -1327,10 +1389,45 @@ border-radius: 10px;
 border: 2px solid #253040;</string>
      </property>
     </widget>
+    <widget class="QLabel" name="display_graph">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>30</y>
+       <width>720</width>
+       <height>60</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::RightToLeft</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20px;
+background-color: rgba(44,56,73,255);
+border-radius: 10px;
+border: 2px solid #253040;
+</string>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignBottom|Qt::AlignRight|Qt::AlignTrailing</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <property name="indent">
+      <number>5</number>
+     </property>
+    </widget>
     <zorder>line_graph</zorder>
     <zorder>line_gr_graph</zorder>
-    <zorder>text_out_calc_2</zorder>
-    <zorder>textBrowser_2</zorder>
+    <zorder>text_out_graph</zorder>
+    <zorder>display_graph</zorder>
    </widget>
    <widget class="QWidget" name="tab_credit">
     <attribute name="title">

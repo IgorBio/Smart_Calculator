@@ -35,6 +35,31 @@ double MathCalc::Calculate(const std::string& expression, double x) {
 }
 
 /**
+ * @brief Calculate the results of the mathematical expression for multiple
+ * variable values.
+ *
+ * This method parses the input mathematical expression, converts it to Reverse
+ * Polish Notation (RPN), and then evaluates the RPN expression with the
+ * provided vector of variable values.
+ *
+ * @param expression The mathematical expression to be evaluated.
+ * @param x A vector containing the values of the variables in the expression.
+ * @return A vector containing the results of evaluating the expression with the
+ * specified variable values.
+ */
+std::vector<double> MathCalc::Calculate(const std::string& expression,
+                                        const std::vector<double>& x) {
+  std::vector<Token> tokens = ParseExpression(expression);
+  std::vector<Token> rpn = ConvertToRPN(tokens);
+  std::vector<double> y;
+  for (auto& value : x) {
+    y.push_back(EvaluateRPN(rpn, value));
+  }
+
+  return y;
+}
+
+/**
  * @brief Calculate the result of the stored mathematical expression with a
  * given variable value.
  *

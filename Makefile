@@ -8,8 +8,8 @@ OS=$(shell uname)
 ifeq ($(OS), Linux)
 	CHECK_LEAKS=CK_FORK=no valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=valgrind.log
 	OPEN=xdg-open
-	DIR=
-	RUN_APP=./$(APP_DIR)/$(APP)
+	DIR=/$(APP)
+	RUN_APP=$(APP_DIR)/$(APP)
 else
 	CHECK_LEAKS=CK_FORK=no leaks --atExit --
 	OPEN=open

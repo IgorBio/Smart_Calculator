@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QString>
 
 #include "controller.h"
 
@@ -19,13 +20,22 @@ class View : public QMainWindow {
   Q_OBJECT
 
  public:
-  explicit View(std::unique_ptr<Controller> controller,
-                QWidget *parent = nullptr);
+  explicit View(QWidget *parent = nullptr);
   ~View();
 
+ private slots:
+  void OnSymbolClicked();
+  void OnDotClicked();
+  void OnOperationClicked();
+  void OnFunctionClicked();
+  void OnClearClicked();
+  void OnBackspaceClicked();
+  void OnEqualClicked();
+
  private:
+  void SetupUi();
+
   Ui::View *ui_;
-  std::unique_ptr<Controller> controller_;
 };
 
 }  // namespace s21

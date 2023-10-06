@@ -27,6 +27,8 @@ class MathCalc {
   explicit MathCalc(const std::string& expression);
 
   static double Calculate(const std::string& expression, double x = 0.0);
+  static std::vector<double> Calculate(const std::string& expression,
+                                       const std::vector<double>& x);
   double Calculate(double x);
 
  private:
