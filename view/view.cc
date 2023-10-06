@@ -5,6 +5,7 @@
 namespace s21 {
 
 View::View(QWidget *parent) : QMainWindow{parent}, ui_{new Ui::View} {
+  setlocale(LC_ALL, "C");
   SetupUi();
 }
 
