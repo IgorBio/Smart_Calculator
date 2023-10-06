@@ -58,7 +58,7 @@ QTabWidget::pane {
 }
 
 QTabBar::tab {
-  font: 16pt;
+  font: 12pt;
   background: rgba(29,38,51,255);
   min-width: 13ex;
   min-height: 6ex;

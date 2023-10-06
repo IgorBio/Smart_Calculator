@@ -23,17 +23,15 @@ class View : public QMainWindow {
   explicit View(QWidget *parent = nullptr);
   ~View();
 
- private slots:
-  void OnSymbolClicked();
-  void OnDotClicked();
-  void OnOperationClicked();
-  void OnFunctionClicked();
-  void OnClearClicked();
-  void OnBackspaceClicked();
-  void OnEqualClicked();
-
  private:
   void SetupUi();
+  void ConnectSymbol();
+  void ConnectDot();
+  void ConnectOperation();
+  void ConnectFunction();
+  void ConnectClear();
+  void ConnectBackspace();
+  void ConnectEqual();
 
   Ui::View *ui_;
 };

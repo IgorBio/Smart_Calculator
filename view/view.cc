@@ -13,45 +13,45 @@ View::~View() { delete ui_; }
 
 void View::SetupUi() {
   ui_->setupUi(this);
-  connect(ui_->btn_0, SIGNAL(clicked()), this, SLOT(OnSymbolClicked()));
-  connect(ui_->btn_1, SIGNAL(clicked()), this, SLOT(OnSymbolClicked()));
-  connect(ui_->btn_2, SIGNAL(clicked()), this, SLOT(OnSymbolClicked()));
-  connect(ui_->btn_3, SIGNAL(clicked()), this, SLOT(OnSymbolClicked()));
-  connect(ui_->btn_4, SIGNAL(clicked()), this, SLOT(OnSymbolClicked()));
-  connect(ui_->btn_5, SIGNAL(clicked()), this, SLOT(OnSymbolClicked()));
-  connect(ui_->btn_6, SIGNAL(clicked()), this, SLOT(OnSymbolClicked()));
-  connect(ui_->btn_7, SIGNAL(clicked()), this, SLOT(OnSymbolClicked()));
-  connect(ui_->btn_8, SIGNAL(clicked()), this, SLOT(OnSymbolClicked()));
-  connect(ui_->btn_9, SIGNAL(clicked()), this, SLOT(OnSymbolClicked()));
-  connect(ui_->btn_x, SIGNAL(clicked()), this, SLOT(OnSymbolClicked()));
-  connect(ui_->btn_exp, SIGNAL(clicked()), this, SLOT(OnSymbolClicked()));
-  connect(ui_->btn_lbracket, SIGNAL(clicked()), this, SLOT(OnSymbolClicked()));
-  connect(ui_->btn_rbracket, SIGNAL(clicked()), this, SLOT(OnSymbolClicked()));
 
-  connect(ui_->btn_plus, SIGNAL(clicked()), this, SLOT(OnOperationClicked()));
-  connect(ui_->btn_minus, SIGNAL(clicked()), this, SLOT(OnOperationClicked()));
-  connect(ui_->btn_mul, SIGNAL(clicked()), this, SLOT(OnOperationClicked()));
-  connect(ui_->btn_div, SIGNAL(clicked()), this, SLOT(OnOperationClicked()));
-  connect(ui_->btn_mod, SIGNAL(clicked()), this, SLOT(OnOperationClicked()));
-  connect(ui_->btn_pow, SIGNAL(clicked()), this, SLOT(OnOperationClicked()));
+  QList<QPushButton *> symbols = {
+      ui_->btn_0, ui_->btn_1,   ui_->btn_2,        ui_->btn_3,       ui_->btn_4,
+      ui_->btn_5, ui_->btn_6,   ui_->btn_7,        ui_->btn_8,       ui_->btn_9,
+      ui_->btn_x, ui_->btn_exp, ui_->btn_lbracket, ui_->btn_rbracket};
 
-  connect(ui_->btn_sin, SIGNAL(clicked()), this, SLOT(OnFunctionClicked()));
-  connect(ui_->btn_cos, SIGNAL(clicked()), this, SLOT(OnFunctionClicked()));
-  connect(ui_->btn_tan, SIGNAL(clicked()), this, SLOT(OnFunctionClicked()));
-  connect(ui_->btn_asin, SIGNAL(clicked()), this, SLOT(OnFunctionClicked()));
-  connect(ui_->btn_acos, SIGNAL(clicked()), this, SLOT(OnFunctionClicked()));
-  connect(ui_->btn_atan, SIGNAL(clicked()), this, SLOT(OnFunctionClicked()));
-  connect(ui_->btn_ln, SIGNAL(clicked()), this, SLOT(OnFunctionClicked()));
-  connect(ui_->btn_log, SIGNAL(clicked()), this, SLOT(OnFunctionClicked()));
-  connect(ui_->btn_sqrt, SIGNAL(clicked()), this, SLOT(OnFunctionClicked()));
+  QList<QPushButton *> operations = {ui_->btn_plus, ui_->btn_minus,
+                                     ui_->btn_mul,  ui_->btn_div,
+                                     ui_->btn_mod,  ui_->btn_pow};
 
-  connect(ui_->btn_dot, SIGNAL(clicked()), this, SLOT(OnDotClicked()));
-  connect(ui_->btn_c, SIGNAL(clicked()), this, SLOT(OnClearClicked()));
-  connect(ui_->btn_back, SIGNAL(clicked()), this, SLOT(OnBackspaceClicked()));
-  connect(ui_->btn_equal, SIGNAL(clicked()), this, SLOT(OnEqualClicked()));
+  QList<QPushButton *> functions = {
+      ui_->btn_sin,  ui_->btn_cos, ui_->btn_tan, ui_->btn_asin, ui_->btn_acos,
+      ui_->btn_atan, ui_->btn_ln,  ui_->btn_log, ui_->btn_sqrt};
+
+  for (auto button : symbols) {
+    connect(button, &QPushButton::clicked, this, [this]() { ConnectSymbol(); });
+  }
+
+  for (auto button : operations) {
+    connect(button, &QPushButton::clicked, this,
+            [this]() { ConnectOperation(); });
+  }
+
+  for (auto button : functions) {
+    connect(button, &QPushButton::clicked, this,
+            [this]() { ConnectFunction(); });
+  }
+
+  connect(ui_->btn_dot, &QPushButton::clicked, this,
+          [this]() { ConnectDot(); });
+  connect(ui_->btn_c, &QPushButton::clicked, this,
+          [this]() { ConnectClear(); });
+  connect(ui_->btn_back, &QPushButton::clicked, this,
+          [this]() { ConnectBackspace(); });
+  connect(ui_->btn_equal, &QPushButton::clicked, this,
+          [this]() { ConnectEqual(); });
 }
 
-void View::OnSymbolClicked() {
+void View::ConnectSymbol() {
   QPushButton *button = qobject_cast<QPushButton *>(sender());
   if (button) {
     QString button_text = button->text();
@@ -63,7 +63,7 @@ void View::OnSymbolClicked() {
   }
 }
 
-void View::OnDotClicked() {
+void View::ConnectDot() {
   QString text = ui_->display->text();
   if (!(text.endsWith('.') || (text.right(1) >= '0' && text.right(1) <= '9'))) {
     ui_->display->setText(text + "0.");
@@ -75,7 +75,7 @@ void View::OnDotClicked() {
   }
 }
 
-void View::OnOperationClicked() {
+void View::ConnectOperation() {
   QPushButton *button = qobject_cast<QPushButton *>(sender());
   if (button) {
     QString button_text = " " + button->text() + " ";
@@ -87,7 +87,7 @@ void View::OnOperationClicked() {
   }
 }
 
-void View::OnFunctionClicked() {
+void View::ConnectFunction() {
   QPushButton *button = qobject_cast<QPushButton *>(sender());
   if (button) {
     QString button_text = " " + button->text() + "(";
@@ -99,13 +99,13 @@ void View::OnFunctionClicked() {
   }
 }
 
-void View::OnClearClicked() {
+void View::ConnectClear() {
   ui_->display->setText("0");
   ui_->display_graph->setText("0");
   ui_->display_res->setText("=0.00");
 }
 
-void View::OnBackspaceClicked() {
+void View::ConnectBackspace() {
   QString text = ui_->display->text().trimmed();
   text.chop(1);
   if (text.isEmpty()) {
@@ -115,7 +115,7 @@ void View::OnBackspaceClicked() {
   ui_->display_graph->setText(text);
 }
 
-void View::OnEqualClicked() {
+void View::ConnectEqual() {
   QString style = ui_->display_res->styleSheet();
   try {
     double result = Controller::Calculate(ui_->display->text().toStdString(),
