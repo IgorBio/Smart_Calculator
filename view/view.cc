@@ -1,5 +1,7 @@
 #include "view.h"
 
+#include <QDebug>
+
 #include "./ui_view.h"
 
 namespace s21 {
@@ -28,94 +30,135 @@ void View::SetupUi() {
       ui_->btn_atan, ui_->btn_ln,  ui_->btn_log, ui_->btn_sqrt};
 
   for (auto button : symbols) {
-    connect(button, &QPushButton::clicked, this, [this]() { ConnectSymbol(); });
+    connect(button, &QPushButton::clicked, this, [this]() { PressSymbol(); });
   }
 
   for (auto button : operations) {
     connect(button, &QPushButton::clicked, this,
-            [this]() { ConnectOperation(); });
+            [this]() { PressOperation(); });
   }
 
   for (auto button : functions) {
-    connect(button, &QPushButton::clicked, this,
-            [this]() { ConnectFunction(); });
+    connect(button, &QPushButton::clicked, this, [this]() { PressFunction(); });
   }
 
-  connect(ui_->btn_dot, &QPushButton::clicked, this,
-          [this]() { ConnectDot(); });
-  connect(ui_->btn_c, &QPushButton::clicked, this,
-          [this]() { ConnectClear(); });
+  connect(ui_->btn_dot, &QPushButton::clicked, this, [this]() { PressDot(); });
+  connect(ui_->btn_c, &QPushButton::clicked, this, [this]() { PressClear(); });
   connect(ui_->btn_back, &QPushButton::clicked, this,
-          [this]() { ConnectBackspace(); });
+          [this]() { PressBackspace(); });
   connect(ui_->btn_equal, &QPushButton::clicked, this,
-          [this]() { ConnectEqual(); });
+          [this]() { PressEqual(); });
 }
 
-void View::ConnectSymbol() {
+void View::ResetUi() {
+  QString display_text = ui_->display->text();
+  if (display_text == "0") {
+    QString style = ui_->display_res->styleSheet();
+    style.replace("color: #ff4a50;", "color: #43eb99;");
+    style.replace("font: 22px;", "font: 26px;");
+    ui_->display_res->setStyleSheet(style);
+    ui_->display_res->setText("=0.00");
+  }
+}
+
+void View::PressSymbol() {
+  ResetUi();
   QPushButton *button = qobject_cast<QPushButton *>(sender());
   if (button) {
     QString button_text = button->text();
-    QString current_text = ui_->display->text();
+    QString display_text = ui_->display->text();
     QString new_text =
-        (current_text == "0") ? button_text : current_text + button_text;
+        (display_text == "0") ? button_text : display_text + button_text;
     ui_->display->setText(new_text);
     ui_->display_graph->setText(new_text);
   }
 }
 
-void View::ConnectDot() {
+void View::PressDot() {
+  ResetUi();
   QString text = ui_->display->text();
-  if (!(text.endsWith('.') || (text.right(1) >= '0' && text.right(1) <= '9'))) {
+  QRegularExpression miss_zero("[^.0-9]$");
+  if (miss_zero.match(text).hasMatch()) {
     ui_->display->setText(text + "0.");
   } else {
-    static QRegularExpression regex("\\s*[0-9]+\\.[0-9]+\\.\\s*$");
-    if (!regex.match(text + ".").hasMatch()) {
+    QRegularExpression no_dot("\\s*\\d+\\.\\d*\\s*$");
+    if (!no_dot.match(text).hasMatch()) {
       ui_->display->setText(text + ".");
     }
   }
 }
 
-void View::ConnectOperation() {
+void View::PressOperation() {
+  ResetUi();
   QPushButton *button = qobject_cast<QPushButton *>(sender());
-  if (button) {
-    QString button_text = " " + button->text() + " ";
-    QString current_text = ui_->display->text();
-    QString new_text =
-        (current_text == "0") ? button_text : current_text + button_text;
-    ui_->display->setText(new_text);
-    ui_->display_graph->setText(new_text);
+  if (!button) {
+    return;
   }
+
+  QString display_text = ui_->display->text();
+  QString button_text = button->text();
+
+  if (display_text == "0" && LastIsUnary(button_text)) {
+    display_text = "";
+  } else if (LastIsUnary(display_text) && IsUnary(button_text)) {
+    display_text.chop(1);
+  } else if (LastIsUnary(display_text)) {
+    return;
+  } else if (LastIsBinary(display_text) && LastIsUnary(button_text)) {
+  } else if (LastIsBinary(display_text)) {
+    display_text.chop(2);
+    button_text += " ";
+  } else if (LastIsMod(display_text)) {
+    display_text.chop(4);
+    button_text += " ";
+  } else if (!PlaceBinary(display_text) && IsBinary(button_text)) {
+    return;
+  } else if (PlaceUnary(display_text)) {
+  } else if (PlaceBinary(display_text)) {
+    button_text = " " + button_text + " ";
+  }
+
+  ui_->display->setText(display_text + button_text);
+  ui_->display_graph->setText(display_text + button_text);
 }
 
-void View::ConnectFunction() {
+void View::PressFunction() {
+  ResetUi();
   QPushButton *button = qobject_cast<QPushButton *>(sender());
-  if (button) {
-    QString button_text = " " + button->text() + "(";
-    QString current_text = ui_->display->text();
-    QString new_text =
-        (current_text == "0") ? button_text : current_text + button_text;
-    ui_->display->setText(new_text);
-    ui_->display_graph->setText(new_text);
+  if (!button) {
+    return;
   }
+
+  QString display_text = ui_->display->text();
+  QString space = (display_text.right(1) == " ") ? "" : " ";
+  QString button_text = space + button->text() + "(";
+  QString new_text =
+      (display_text == "0") ? button_text : display_text + button_text;
+  ui_->display->setText(new_text);
+  ui_->display_graph->setText(new_text);
 }
 
-void View::ConnectClear() {
+void View::PressClear() {
+  ResetUi();
   ui_->display->setText("0");
   ui_->display_graph->setText("0");
   ui_->display_res->setText("=0.00");
 }
 
-void View::ConnectBackspace() {
-  QString text = ui_->display->text().trimmed();
-  text.chop(1);
+void View::PressBackspace() {
+  ResetUi();
+  QString text = ui_->display->text();
+  QString last = LastToken(text);
+  text.chop(last.size());
   if (text.isEmpty()) {
     text = "0";
   }
-  ui_->display->setText(text);
-  ui_->display_graph->setText(text);
+  ui_->display->setText(text.trimmed());
+  ui_->display_graph->setText(text.trimmed());
 }
 
-void View::ConnectEqual() {
+void View::PressEqual() {
+  ResetUi();
   QString style = ui_->display_res->styleSheet();
   try {
     double result = Controller::Calculate(ui_->display->text().toStdString(),
@@ -128,16 +171,62 @@ void View::ConnectEqual() {
     } else {
       ui_->display_res->setText("=" + QString::number(result, 'f', 6));
     }
-    style += "color: #43eb99; font: 26px;";
+    style.replace("color: #ff4a50;", "color: #43eb99;");
+    style.replace("font: 22px;", "font: 26px;");
     ui_->display_res->setStyleSheet(style);
     ui_->display->setText("0");
   } catch (const std::exception &err) {
     ui_->display->setText("0");
     ui_->display_graph->setText("0");
-    style += "color: #ff4a50; font: 22px;";
+    style.replace("color: #43eb99;", "color: #ff4a50;");
+    style.replace("font: 26px;", "font: 22px;");
     ui_->display_res->setStyleSheet(style);
     ui_->display_res->setText(err.what());
   }
+}
+
+bool View::PlaceUnary(const QString &text) {
+  if (text.isEmpty()) {
+    return true;
+  }
+
+  return text.right(1) == "(" || text.right(1) == "e" || text.right(1) == " ";
+}
+
+bool View::PlaceBinary(const QString &text) {
+  return text.right(1) != "(" && text.right(1) != "e";
+}
+
+bool View::IsUnary(const QString &text) { return text == "+" || text == "-"; }
+
+bool View::IsBinary(const QString &text) {
+  return text == "*" || text == "/" || text == "^" || text == "mod";
+}
+
+bool View::LastIsUnary(const QString &text) {
+  return text.right(1) == "+" || text.right(1) == "-";
+}
+
+bool View::LastIsBinary(const QString &text) {
+  return text.right(2) == "+ " || text.right(2) == "- " ||
+         text.right(2) == "* " || text.right(2) == "/ " ||
+         text.right(2) == "^ ";
+}
+
+bool View::LastIsMod(const QString &text) { return text.right(4) == "mod "; }
+
+QString View::LastToken(const QString &text) {
+  static QRegularExpression regex(
+      R"((\d)|([+\-*/]|\bmod\s|\bmod\b)|(ln|log|sin|cos|tan|asin|acos|atan|sqrt)|([()xe.]))");
+  QRegularExpressionMatchIterator it = regex.globalMatch(text);
+  QString last_token;
+
+  while (it.hasNext()) {
+    QRegularExpressionMatch match = it.next();
+    last_token = match.captured(0);
+  }
+
+  return last_token;
 }
 
 }  // namespace s21

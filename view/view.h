@@ -20,20 +20,29 @@ class View : public QMainWindow {
   Q_OBJECT
 
  public:
-  explicit View(QWidget *parent = nullptr);
+  explicit View(QWidget* parent = nullptr);
   ~View();
 
  private:
   void SetupUi();
-  void ConnectSymbol();
-  void ConnectDot();
-  void ConnectOperation();
-  void ConnectFunction();
-  void ConnectClear();
-  void ConnectBackspace();
-  void ConnectEqual();
+  void ResetUi();
+  void PressSymbol();
+  void PressDot();
+  void PressOperation();
+  void PressFunction();
+  void PressClear();
+  void PressBackspace();
+  void PressEqual();
+  bool PlaceUnary(const QString& text);
+  bool PlaceBinary(const QString& text);
+  bool IsUnary(const QString& text);
+  bool IsBinary(const QString& text);
+  bool LastIsUnary(const QString& text);
+  bool LastIsBinary(const QString& text);
+  bool LastIsMod(const QString& text);
+  QString LastToken(const QString& text);
 
-  Ui::View *ui_;
+  Ui::View* ui_;
 };
 
 }  // namespace s21
