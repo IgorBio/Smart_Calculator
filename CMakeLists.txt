@@ -28,6 +28,8 @@ set(HEADERS
         ${PROJECT_SOURCE_DIR}/model/credit_calc.h
         ${PROJECT_SOURCE_DIR}/model/deposit_calc.h
         ${PROJECT_SOURCE_DIR}/view/view.h
+        ${PROJECT_SOURCE_DIR}/view/chart.h
+        ${PROJECT_SOURCE_DIR}/view/validator.h
 )
 
 set(SOURCES
@@ -37,6 +39,8 @@ set(SOURCES
         ${PROJECT_SOURCE_DIR}/model/credit_calc.cc
         ${PROJECT_SOURCE_DIR}/model/deposit_calc.cc
         ${PROJECT_SOURCE_DIR}/view/view.cc
+        ${PROJECT_SOURCE_DIR}/view/chart.cc
+        ${PROJECT_SOURCE_DIR}/view/validator.cc
 )
 
 set(FORMS
@@ -80,6 +84,7 @@ target_compile_options(
         -Werror
         -Wextra
         -Wpedantic
+        -std=c++17
 )
 
 target_link_libraries(SmartCalc PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Charts)
@@ -110,6 +115,7 @@ if(CPPCHECK)
         "--suppress=missingInclude"
         "--suppress=unusedStructMember"
         "--suppress=unusedFunction"
+        "--suppress=unusedPrivateFunction"
     )
     add_custom_target(
         cppcheck

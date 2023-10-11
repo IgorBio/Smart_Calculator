@@ -110,7 +110,7 @@ QTabBar::tab::hover {
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QPushButton" name="btn_equal">
+    <widget class="QPushButton" name="btn_eq">
      <property name="geometry">
       <rect>
        <x>660</x>
@@ -1202,9 +1202,9 @@ border-radius: 10px;
     <widget class="QLabel" name="display">
      <property name="geometry">
       <rect>
-       <x>40</x>
+       <x>30</x>
        <y>30</y>
-       <width>720</width>
+       <width>741</width>
        <height>60</height>
       </rect>
      </property>
@@ -1237,9 +1237,9 @@ border: 2px solid #253040;
     <widget class="QLabel" name="display_res">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>9</x>
        <y>10</y>
-       <width>760</width>
+       <width>781</width>
        <height>180</height>
       </rect>
      </property>
@@ -1308,7 +1308,7 @@ border: 2px solid #253040;</string>
     </widget>
     <zorder>line_calc</zorder>
     <zorder>line_gr_calc</zorder>
-    <zorder>btn_equal</zorder>
+    <zorder>btn_eq</zorder>
     <zorder>btn_plus</zorder>
     <zorder>btn_minus</zorder>
     <zorder>btn_div</zorder>
@@ -1352,7 +1352,7 @@ border: 2px solid #253040;</string>
     <widget class="Line" name="line_gr_graph">
      <property name="geometry">
       <rect>
-       <x>300</x>
+       <x>301</x>
        <y>0</y>
        <width>92</width>
        <height>2</height>
@@ -1381,27 +1381,12 @@ border: 2px solid #253040;</string>
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QTextBrowser" name="text_out_graph">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>10</y>
-       <width>761</width>
-       <height>511</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: #253040;
-border-radius: 10px;
-border: 2px solid #253040;</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="display_graph">
      <property name="geometry">
       <rect>
-       <x>40</x>
+       <x>30</x>
        <y>30</y>
-       <width>720</width>
+       <width>741</width>
        <height>60</height>
       </rect>
      </property>
@@ -1431,9 +1416,246 @@ border: 2px solid #253040;
       <number>5</number>
      </property>
     </widget>
+    <widget class="QWidget" name="chart" native="true">
+     <property name="geometry">
+      <rect>
+       <x>9</x>
+       <y>10</y>
+       <width>781</width>
+       <height>521</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: #253040;
+border-radius: 10px;
+border: 2px solid #253040;</string>
+     </property>
+     <widget class="QPushButton" name="btn_plot">
+      <property name="geometry">
+       <rect>
+        <x>650</x>
+        <y>460</y>
+        <width>120</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+background-color: #43eb99;
+color: #1d2633;
+font-size: 20px;
+border-radius: 10px;
+}
+QPushButton::hover {
+background-color:  #a24fea;
+color: #1d2633;
+font-size: 20px;
+border-radius: 10px;
+}
+QPushButton::pressed {
+background-color: #7521c5;
+color: #1d2633;
+font-size: 16px;
+border-radius: 10px;
+}</string>
+      </property>
+      <property name="text">
+       <string>Plot</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="x_min">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>460</y>
+        <width>121</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 10px;
+background-color: #2c3849;
+border-radius: 10px;
+border: 2px solid #253040;</string>
+      </property>
+      <property name="frame">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+      <property name="buttonSymbols">
+       <enum>QAbstractSpinBox::NoButtons</enum>
+      </property>
+      <property name="prefix">
+       <string>   min x:  </string>
+      </property>
+      <property name="decimals">
+       <number>1</number>
+      </property>
+      <property name="minimum">
+       <double>-1000000.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1000000.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>-1000000.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="x_max">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>460</y>
+        <width>121</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 10px;
+background-color: #2c3849;
+border-radius: 10px;
+border: 2px solid #253040;</string>
+      </property>
+      <property name="frame">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+      <property name="buttonSymbols">
+       <enum>QAbstractSpinBox::NoButtons</enum>
+      </property>
+      <property name="prefix">
+       <string>   max x:  </string>
+      </property>
+      <property name="decimals">
+       <number>1</number>
+      </property>
+      <property name="minimum">
+       <double>-1000000.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1000000.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>1000000.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QWidget" name="chart_field" native="true">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>751</width>
+        <height>381</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="layout"/>
+     </widget>
+     <widget class="QDoubleSpinBox" name="y_max">
+      <property name="geometry">
+       <rect>
+        <x>490</x>
+        <y>460</y>
+        <width>121</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 10px;
+background-color: #2c3849;
+border-radius: 10px;
+border: 2px solid #253040;</string>
+      </property>
+      <property name="frame">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+      <property name="buttonSymbols">
+       <enum>QAbstractSpinBox::NoButtons</enum>
+      </property>
+      <property name="prefix">
+       <string>   max y:  </string>
+      </property>
+      <property name="decimals">
+       <number>1</number>
+      </property>
+      <property name="minimum">
+       <double>-1000000.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1000000.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>1000000.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="y_min">
+      <property name="geometry">
+       <rect>
+        <x>370</x>
+        <y>460</y>
+        <width>121</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 10px;
+background-color: #2c3849;
+border-radius: 10px;
+border: 2px solid #253040;</string>
+      </property>
+      <property name="frame">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+      <property name="buttonSymbols">
+       <enum>QAbstractSpinBox::NoButtons</enum>
+      </property>
+      <property name="prefix">
+       <string>   min y:  </string>
+      </property>
+      <property name="decimals">
+       <number>1</number>
+      </property>
+      <property name="minimum">
+       <double>-1000000.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1000000.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>-1000000.000000000000000</double>
+      </property>
+     </widget>
+     <zorder>chart_field</zorder>
+     <zorder>x_min</zorder>
+     <zorder>x_max</zorder>
+     <zorder>btn_plot</zorder>
+     <zorder>y_max</zorder>
+     <zorder>y_min</zorder>
+    </widget>
+    <zorder>chart</zorder>
     <zorder>line_graph</zorder>
     <zorder>line_gr_graph</zorder>
-    <zorder>text_out_graph</zorder>
     <zorder>display_graph</zorder>
    </widget>
    <widget class="QWidget" name="tab_credit">

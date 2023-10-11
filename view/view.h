@@ -1,12 +1,11 @@
 #ifndef SMARTCALC_VIEW_VIEW_H_
 #define SMARTCALC_VIEW_VIEW_H_
 
-#include <QFileDialog>
 #include <QMainWindow>
-#include <QMessageBox>
-#include <QString>
 
+#include "chart.h"
 #include "controller.h"
+#include "validator.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,27 +23,22 @@ class View : public QMainWindow {
   ~View();
 
  private:
-  void SetupUi();
-  void ResetUi();
-  void PressSymbol();
-  void PressDot();
-  void PressOperation();
-  void PressFunction();
-  void PressClear();
-  void PressBackspace();
-  void PressEqual();
-  bool PlaceUnary(const QString& text);
-  bool PlaceBinary(const QString& text);
-  bool IsUnary(const QString& text);
-  bool IsBinary(const QString& text);
-  bool LastIsUnary(const QString& text);
-  bool LastIsBinary(const QString& text);
-  bool LastIsMod(const QString& text);
-  QString LastToken(const QString& text);
+  static constexpr qsizetype kNumPoints{10000};
+  static constexpr qreal kLineWidth{2};
 
   Ui::View* ui_;
-};
+  Chart* chart_;
 
+  void SetupUi();
+  void SetupChart();
+  void ResetUi();
+  void PressButton();
+  void PressClear();
+  void PressEqual();
+
+  void Plot();
+  QValueAxis* SetupAxis(const QString& name);
+};
 }  // namespace s21
 
 #endif  // SMARTCALC_VIEW_VIEW_H_

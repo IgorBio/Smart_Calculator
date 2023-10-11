@@ -51,12 +51,41 @@ std::vector<double> MathCalc::Calculate(const std::string& expression,
                                         const std::vector<double>& x) {
   std::vector<Token> tokens = ParseExpression(expression);
   std::vector<Token> rpn = ConvertToRPN(tokens);
-  std::vector<double> y;
-  for (auto& value : x) {
-    y.push_back(EvaluateRPN(rpn, value));
-  }
+  std::vector<double> y(x.size());
+  std::transform(x.begin(), x.end(), y.begin(),
+                 [&rpn](double value) { return EvaluateRPN(rpn, value); });
 
   return y;
+}
+
+/**
+ * @brief Calculate the results of the mathematical expression for a range of
+ * variable values.
+ *
+ * This method generates a vector of variable values from x_min to x_max
+ * (inclusive) with a specified step size. It then parses the input mathematical
+ * expression, converts it to Reverse Polish Notation (RPN), and evaluates the
+ * RPN expression with the generated vector of variable values.
+ *
+ * @param expression The mathematical expression to be evaluated.
+ * @param x_min The minimum value of the variables in the expression.
+ * @param x_max The maximum value of the variables in the expression.
+ * @param size The number of points to be generated between x_min and x_max
+ * (inclusive).
+ * @return A pair of vectors: the first vector contains the generated variable
+ * values, and the second vector contains the results of evaluating the
+ * expression with the specified variable values.
+ */
+std::pair<std::vector<double>, std::vector<double>> MathCalc::Calculate(
+    const std::string& expression, double x_min, double x_max,
+    std::size_t size) {
+  std::vector<double> x(size);
+  double step = (x_max - x_min) / (size - 1);
+  std::iota(x.begin(), x.end(), 0);
+  std::for_each(x.begin(), x.end(),
+                [x_min, step](double& value) { value = x_min + value * step; });
+  std::vector<double> y = Calculate(expression, x);
+  return {x, y};
 }
 
 /**

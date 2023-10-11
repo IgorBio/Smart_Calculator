@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cmath>
+#include <numeric>
 #include <stack>
 #include <stdexcept>
 #include <vector>
@@ -29,6 +30,9 @@ class MathCalc {
   static double Calculate(const std::string& expression, double x = 0.0);
   static std::vector<double> Calculate(const std::string& expression,
                                        const std::vector<double>& x);
+  static std::pair<std::vector<double>, std::vector<double>> Calculate(
+      const std::string& expression, double x_min, double x_max,
+      std::size_t size);
   double Calculate(double x);
 
  private:
