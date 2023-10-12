@@ -94,15 +94,13 @@ void View::SetupChart() {
   ui_->chart_field->layout()->addWidget(chart_);
   chart_->SetRangeX(ui_->x_min->value(), ui_->x_max->value());
   chart_->SetRangeY(ui_->y_min->value(), ui_->y_max->value());
-  QLineSeries *series = new QLineSeries();
-  chart_->AddSeries(series);
 }
 
 QValueAxis *View::SetupAxis(const QString &name) {
   QValueAxis *axis(new QValueAxis());
   axis->setGridLinePen(
       QPen(QColor(134, 143, 155, 255), 1, Qt::DashLine, Qt::RoundCap));
-  axis->setLinePenColor(QColor(61, 222, 183, 255));
+  axis->setLinePenColor(QColor(200, 200, 200, 255));
   axis->setTickCount(10);
 
   axis->setLabelsColor(QColor(200, 200, 200, 255));
@@ -117,25 +115,40 @@ QValueAxis *View::SetupAxis(const QString &name) {
 
   QBrush title_brush(QColor(61, 222, 183, 255));
   axis->setTitleBrush(title_brush);
+
   return axis;
 }
 
 void View::Plot() {
+  ResetUi();
   chart_->Clear();
   chart_->SetRangeX(ui_->x_min->value(), ui_->x_max->value());
   chart_->SetRangeY(ui_->y_min->value(), ui_->y_max->value());
 
   QLineSeries *series = new QLineSeries();
+  QString style = ui_->display_graph->styleSheet();
 
-  auto [x, y] = Controller::Calculate(ui_->display->text().toStdString(),
-                                      ui_->x_min->value(), ui_->x_max->value(),
-                                      kNumPoints);
+  try {
+    auto [x, y] = Controller::Calculate(
+        ui_->display_graph->text().toStdString(), ui_->x_min->value(),
+        ui_->x_max->value(), kNumPoints);
 
-  for (qsizetype i = 0; i < kNumPoints; ++i) {
-    series->append(x[i], y[i]);
+    for (qsizetype i = 0; i < kNumPoints; ++i) {
+      series->append(x[i], y[i]);
+    }
+
+    series->setPen(QPen(QColor(61, 222, 183, 255), kLineWidth, Qt::SolidLine,
+                        Qt::RoundCap));
+
+    chart_->AddSeries(series);
+  } catch (const std::exception &err) {
+    ui_->display->setText("0");
+    ui_->display_graph->setText("0");
+    style.replace("color: #43eb99;", "color: #ff4a50;");
+    style.replace("font: 26px;", "font: 22px;");
+    ui_->display_graph->setStyleSheet(style);
+    ui_->display_graph->setText(err.what());
   }
-
-  chart_->AddSeries(series);
 }
 
 }  // namespace s21

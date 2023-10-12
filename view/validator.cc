@@ -86,7 +86,8 @@ QString Validator::Operation(const QString& expression, const QString& token) {
 }
 
 QString Validator::Function(const QString& expression, const QString& token) {
-  QString space = (expression.right(1) == " ") ? "" : " ";
+  QString space =
+      (expression.right(1) == " " || expression.right(1) == "(") ? "" : " ";
   QString text = space + token + "(";
   return (expression == "0") ? text : expression + text;
 }

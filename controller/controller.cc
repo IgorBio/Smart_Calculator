@@ -6,7 +6,7 @@ double Controller::Calculate(const std::string& expression, double x) {
   return MathCalc::Calculate(expression, x);
 }
 
-std::pair<std::vector<double>, std::vector<double>> Calculate(
+std::pair<std::vector<double>, std::vector<double>> Controller::Calculate(
     const std::string& expression, double x_min, double x_max,
     std::size_t size) {
   return MathCalc::Calculate(expression, x_min, x_max, size);

@@ -35,30 +35,6 @@ double MathCalc::Calculate(const std::string& expression, double x) {
 }
 
 /**
- * @brief Calculate the results of the mathematical expression for multiple
- * variable values.
- *
- * This method parses the input mathematical expression, converts it to Reverse
- * Polish Notation (RPN), and then evaluates the RPN expression with the
- * provided vector of variable values.
- *
- * @param expression The mathematical expression to be evaluated.
- * @param x A vector containing the values of the variables in the expression.
- * @return A vector containing the results of evaluating the expression with the
- * specified variable values.
- */
-std::vector<double> MathCalc::Calculate(const std::string& expression,
-                                        const std::vector<double>& x) {
-  std::vector<Token> tokens = ParseExpression(expression);
-  std::vector<Token> rpn = ConvertToRPN(tokens);
-  std::vector<double> y(x.size());
-  std::transform(x.begin(), x.end(), y.begin(),
-                 [&rpn](double value) { return EvaluateRPN(rpn, value); });
-
-  return y;
-}
-
-/**
  * @brief Calculate the results of the mathematical expression for a range of
  * variable values.
  *
@@ -79,12 +55,15 @@ std::vector<double> MathCalc::Calculate(const std::string& expression,
 std::pair<std::vector<double>, std::vector<double>> MathCalc::Calculate(
     const std::string& expression, double x_min, double x_max,
     std::size_t size) {
-  std::vector<double> x(size);
+  std::vector<double> x(size), y(size);
   double step = (x_max - x_min) / (size - 1);
   std::iota(x.begin(), x.end(), 0);
   std::for_each(x.begin(), x.end(),
                 [x_min, step](double& value) { value = x_min + value * step; });
-  std::vector<double> y = Calculate(expression, x);
+  std::vector<Token> tokens = ParseExpression(expression);
+  std::vector<Token> rpn = ConvertToRPN(tokens);
+  std::transform(x.begin(), x.end(), y.begin(),
+                 [&rpn](double value) { return EvaluateRPN(rpn, value); });
   return {x, y};
 }
 
@@ -110,7 +89,7 @@ double MathCalc::Calculate(double x) { return EvaluateRPN(rpn_, x); }
  *
  * @param expression The input mathematical expression to be parsed.
  * @return A vector of tokens representing the parsed expression.
- * @throws std::invalid_argument if the expression contains invalid characters
+ * @throws std::logic_error if the expression contains invalid characters
  * or if it is missing an operator between consecutive operands or variables.
  */
 std::vector<Token> MathCalc::ParseExpression(const std::string& expression) {
@@ -138,11 +117,11 @@ std::vector<Token> MathCalc::ParseExpression(const std::string& expression) {
       pos = ParseOperator(expression, pos, tokens);
     } else if (std::isspace(ch)) {
       if (!ValidateSpaces(expression, pos)) {
-        throw std::invalid_argument("Invalid expression: missing operator");
+        throw std::logic_error("Invalid expression: missing operator");
       }
       ++pos;
     } else {
-      throw std::invalid_argument("Invalid character: " + std::string(1, ch));
+      throw std::logic_error("Invalid character: " + std::string(1, ch));
     }
   }
 
@@ -158,8 +137,6 @@ std::vector<Token> MathCalc::ParseExpression(const std::string& expression) {
  *
  * @param tokens A vector of input tokens in infix notation.
  * @return A vector of tokens representing the same expression in RPN.
- * @throws std::invalid_argument if the input expression contains invalid
- * brackets or operators.
  */
 std::vector<Token> MathCalc::ConvertToRPN(const std::vector<Token>& tokens) {
   std::vector<Token> rpn;
@@ -189,7 +166,7 @@ std::vector<Token> MathCalc::ConvertToRPN(const std::vector<Token>& tokens) {
  * @param rpn A vector of tokens representing the expression in RPN.
  * @param x The value to substitute for the variable 'x'.
  * @return The result of evaluating the expression.
- * @throws std::invalid_argument if the RPN expression is invalid or contains
+ * @throws std::logic_error if the RPN expression is invalid or contains
  * too few or too many operands.
  */
 double MathCalc::EvaluateRPN(const std::vector<Token>& rpn, double x) {
@@ -208,7 +185,7 @@ double MathCalc::EvaluateRPN(const std::vector<Token>& rpn, double x) {
   }
 
   if (operands.size() != 1) {
-    throw std::invalid_argument("Invalid expression");
+    throw std::logic_error("Invalid expression");
   }
 
   return operands.top();
@@ -222,7 +199,7 @@ double MathCalc::EvaluateRPN(const std::vector<Token>& rpn, double x) {
  * @param pos The starting position for parsing.
  * @param tokens The vector to store the parsed tokens.
  * @return The new position after parsing the number.
- * @throws std::invalid_argument if the parsed number is invalid.
+ * @throws std::logic_error if the parsed number is invalid.
  */
 std::size_t MathCalc::ParseNumber(const std::string& expression,
                                   std::size_t pos, std::vector<Token>& tokens) {
@@ -250,7 +227,7 @@ std::size_t MathCalc::ParseNumber(const std::string& expression,
   std::string tok = expression.substr(start, pos - start);
 
   if (!ValidateNumber(tok)) {
-    throw std::invalid_argument("Invalid number: " + tok);
+    throw std::logic_error("Invalid number: " + tok);
   }
 
   tokens.push_back(Token(TokenType::kNumber, tok));
@@ -266,7 +243,7 @@ std::size_t MathCalc::ParseNumber(const std::string& expression,
  * @param pos The current position within the expression.
  * @param tokens The vector to store parsed tokens.
  * @return The new position after parsing the alpha token.
- * @throws std::invalid_argument if the parsed token is not a valid alpha token.
+ * @throws std::logic_error if the parsed token is not a valid alpha token.
  */
 std::size_t MathCalc::ParseAlpha(const std::string& expression, std::size_t pos,
                                  std::vector<Token>& tokens) {
@@ -279,7 +256,7 @@ std::size_t MathCalc::ParseAlpha(const std::string& expression, std::size_t pos,
   std::string tok = expression.substr(start, pos - start);
 
   if (!ValidateAlpha(tok)) {
-    throw std::invalid_argument("Invalid token: " + tok);
+    throw std::logic_error("Invalid token: " + tok);
   }
 
   if (tok == "x") {
@@ -302,7 +279,7 @@ std::size_t MathCalc::ParseAlpha(const std::string& expression, std::size_t pos,
  * @param expression The expression string.
  * @param pos The current position within the expression.
  * @param tokens The vector to store parsed tokens.
- * @throws std::invalid_argument if the parsed operator is not valid.
+ * @throws std::logic_error if the parsed operator is not valid.
  * @return The new position after parsing the operator token.
  */
 std::size_t MathCalc::ParseOperator(const std::string& expression,
@@ -331,7 +308,7 @@ std::size_t MathCalc::ParseOperator(const std::string& expression,
       priority = 3;
       break;
     default:
-      throw std::invalid_argument("Invalid operator: " + std::string(1, op));
+      throw std::logic_error("Invalid operator: " + std::string(1, op));
   }
 
   tokens.push_back(Token(type, std::string(1, op), priority));
@@ -461,17 +438,17 @@ bool MathCalc::ValidateSpaces(const std::string& expression, std::size_t pos) {
  * @param operands A stack containing the operands for the mathematical
  * operation.
  *
- * @throws std::invalid_argument if there are not enough operands for the
+ * @throws std::logic_error if there are not enough operands for the
  * operator, division by zero is encountered, or if an unsupported operator is
  * encountered.
  */
 void MathCalc::ProcessOperator(const Token& token,
                                std::stack<double>& operands) {
   if (operands.size() < 1 && token.IsUnaryOperator()) {
-    throw std::invalid_argument("Not enough operands for unary operator");
+    throw std::logic_error("Not enough operands for unary operator");
   }
   if (operands.size() < 2 && token.IsBinaryOperator()) {
-    throw std::invalid_argument("Not enough operands for binary operator");
+    throw std::logic_error("Not enough operands for binary operator");
   }
   double result = 0.0;
 
@@ -484,8 +461,7 @@ void MathCalc::ProcessOperator(const Token& token,
     } else if (token.GetToken() == "-") {
       result = -operand;
     } else {
-      throw std::invalid_argument("Unsupported unary operator: " +
-                                  token.GetToken());
+      throw std::logic_error("Unsupported unary operator: " + token.GetToken());
     }
   } else {
     double operand2 = operands.top();
@@ -500,17 +476,14 @@ void MathCalc::ProcessOperator(const Token& token,
     } else if (token.GetToken() == "*") {
       result = operand1 * operand2;
     } else if (token.GetToken() == "/") {
-      if (operand2 == 0) {
-        throw std::invalid_argument("Division by zero");
-      }
       result = operand1 / operand2;
     } else if (token.GetToken() == "^") {
       result = std::pow(operand1, operand2);
     } else if (token.GetToken() == "mod") {
       result = std::fmod(operand1, operand2);
     } else {
-      throw std::invalid_argument("Unsupported binary operator: " +
-                                  token.GetToken());
+      throw std::logic_error("Unsupported binary operator: " +
+                             token.GetToken());
     }
   }
 
@@ -527,15 +500,15 @@ void MathCalc::ProcessOperator(const Token& token,
  * @param token The function token to be processed.
  * @param operands A stack containing the operands for the function.
  *
- * @throws std::invalid_argument if there are not enough operands for the
+ * @throws std::logic_error if there are not enough operands for the
  * function, if an invalid input is provided to a function (e.g., sqrt of a
  * negative number), or if an unsupported function is encountered.
  */
 void MathCalc::ProcessFunction(const Token& token,
                                std::stack<double>& operands) {
   if (operands.empty()) {
-    throw std::invalid_argument("Not enough operands for function: " +
-                                token.GetToken());
+    throw std::logic_error("Not enough operands for function: " +
+                           token.GetToken());
   }
 
   double operand = operands.top();
@@ -549,34 +522,19 @@ void MathCalc::ProcessFunction(const Token& token,
   } else if (token.GetToken() == "tan") {
     result = std::tan(operand);
   } else if (token.GetToken() == "asin") {
-    if (operand < -1.0 || operand > 1.0) {
-      throw std::invalid_argument("Invalid input for asin");
-    }
     result = std::asin(operand);
   } else if (token.GetToken() == "acos") {
-    if (operand < -1.0 || operand > 1.0) {
-      throw std::invalid_argument("Invalid input for acos");
-    }
     result = std::acos(operand);
   } else if (token.GetToken() == "atan") {
     result = std::atan(operand);
   } else if (token.GetToken() == "sqrt") {
-    if (operand < 0.0) {
-      throw std::invalid_argument("Invalid input for sqrt");
-    }
     result = std::sqrt(operand);
   } else if (token.GetToken() == "ln") {
-    if (operand <= 0.0) {
-      throw std::invalid_argument("Invalid input for ln");
-    }
     result = std::log(operand);
   } else if (token.GetToken() == "log") {
-    if (operand <= 0.0) {
-      throw std::invalid_argument("Invalid input for log");
-    }
     result = std::log10(operand);
   } else {
-    throw std::invalid_argument("Unsupported function: " + token.GetToken());
+    throw std::logic_error("Unsupported function: " + token.GetToken());
   }
 
   operands.push(result);
@@ -594,7 +552,7 @@ void MathCalc::ProcessFunction(const Token& token,
  * @param operators A stack containing operators.
  * @param rpn A vector representing the Reverse Polish Notation output.
  *
- * @throws std::invalid_argument if there is an invalid bracket sequence.
+ * @throws std::logic_error if there is an invalid bracket sequence.
  */
 void MathCalc::ProcessBrackets(std::stack<Token>& operators,
                                std::vector<Token>& rpn) {
@@ -603,7 +561,7 @@ void MathCalc::ProcessBrackets(std::stack<Token>& operators,
     operators.pop();
   }
   if (operators.empty() || !operators.top().IsOpenBracket()) {
-    throw std::invalid_argument("Invalid bracket sequence");
+    throw std::logic_error("Invalid bracket sequence");
   }
   operators.pop();
   if (!operators.empty() && operators.top().IsFunction()) {
@@ -650,13 +608,13 @@ void MathCalc::ProcessOperators(const Token& token,
  *
  * @param operators A stack containing operators.
  * @param rpn A vector representing the Reverse Polish Notation output.
- * @throws std::invalid_argument if an invalid bracket sequence is encountered.
+ * @throws std::logic_error if an invalid bracket sequence is encountered.
  */
 void MathCalc::ProcessRemainingOperators(std::stack<Token>& operators,
                                          std::vector<Token>& rpn) {
   while (!operators.empty()) {
     if (operators.top().IsOpenBracket() || operators.top().IsCloseBracket()) {
-      throw std::invalid_argument("Invalid bracket sequence");
+      throw std::logic_error("Invalid bracket sequence");
     }
     rpn.push_back(operators.top());
     operators.pop();
