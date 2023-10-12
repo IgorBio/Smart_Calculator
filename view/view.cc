@@ -40,6 +40,8 @@ void View::ResetUi() {
     style.replace("color: #ff4a50;", "color: #43eb99;");
     style.replace("font: 22px;", "font: 26px;");
     ui_->display_res->setStyleSheet(style);
+    ui_->display_input->setText("");
+    ui_->display_res_graph->setText("");
     ui_->display_res->setText("=0.00");
   }
 }
@@ -59,6 +61,8 @@ void View::PressClear() {
   ui_->display->setText("0");
   ui_->display_graph->setText("0");
   ui_->display_res->setText("=0.00");
+  ui_->display_res_graph->setText("");
+  ui_->display_input->setText("");
 }
 
 void View::PressEqual() {
@@ -75,11 +79,13 @@ void View::PressEqual() {
     } else {
       ui_->display_res->setText("=" + QString::number(result, 'f', 6));
     }
+    ui_->display_input->setText(ui_->display->text());
     style.replace("color: #ff4a50;", "color: #43eb99;");
     style.replace("font: 22px;", "font: 26px;");
     ui_->display_res->setStyleSheet(style);
     ui_->display->setText("0");
   } catch (const std::exception &err) {
+    ui_->display_input->setText(ui_->display->text());
     ui_->display->setText("0");
     ui_->display_graph->setText("0");
     style.replace("color: #43eb99;", "color: #ff4a50;");
@@ -142,12 +148,7 @@ void View::Plot() {
 
     chart_->AddSeries(series);
   } catch (const std::exception &err) {
-    ui_->display->setText("0");
-    ui_->display_graph->setText("0");
-    style.replace("color: #43eb99;", "color: #ff4a50;");
-    style.replace("font: 26px;", "font: 22px;");
-    ui_->display_graph->setStyleSheet(style);
-    ui_->display_graph->setText(err.what());
+    ui_->display_res_graph->setText(err.what());
   }
 }
 
