@@ -31,6 +31,8 @@ void View::SetupUi() {
   connect(ui_->btn_c, &QPushButton::clicked, this, [this]() { PressClear(); });
   connect(ui_->btn_eq, &QPushButton::clicked, this, [this]() { PressEqual(); });
   connect(ui_->btn_plot, &QPushButton::clicked, this, [this]() { Plot(); });
+  connect(ui_->btn_run_credit, &QPushButton::clicked, this,
+          [this]() { RunCredit(); });
 }
 
 void View::ResetUi() {
@@ -147,9 +149,37 @@ void View::Plot() {
                         Qt::RoundCap));
 
     chart_->AddSeries(series);
+    ui_->display_res_graph->setText("");
   } catch (const std::exception &err) {
     ui_->display_res_graph->setText(err.what());
   }
+}
+
+void View::RunCredit() {
+  CreditCalc::CreditInfo info = {ui_->amount_credit->value(),
+                                 ui_->rate_credit->value(),
+                                 ui_->term_credit->value(),
+                                 ui_->type_credit->currentText() == "Annuity"
+                                     ? CreditCalc::CreditType::kAnnuity
+                                     : CreditCalc::CreditType::kDifferentiated};
+  CreditCalc::PaymentPlan plan = Controller::Calculate(info);
+
+  QStandardItemModel *model = new QStandardItemModel(this);
+  model->setColumnCount(5);
+  model->setHorizontalHeaderLabels(
+      {"Date", "Amount", "Principal", "Interest", "Balance"});
+
+  for (std::size_t i = 0; i < plan.dates.size(); ++i) {
+    QList<QStandardItem *> rows;
+    rows.append(new QStandardItem(QString::fromStdString(plan.dates[i])));
+    rows.append(new QStandardItem(QString::number(plan.payments[i])));
+    rows.append(new QStandardItem(QString::number(plan.principals[i])));
+    rows.append(new QStandardItem(QString::number(plan.interests[i])));
+    rows.append(new QStandardItem(QString::number(plan.balances[i])));
+    model->appendRow(rows);
+  }
+
+  ui_->table_credit->setModel(model);
 }
 
 }  // namespace s21

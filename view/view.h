@@ -38,6 +38,8 @@ class View : public QMainWindow {
 
   void Plot();
   QValueAxis* SetupAxis(const QString& name);
+
+  void RunCredit();
 };
 }  // namespace s21
 
