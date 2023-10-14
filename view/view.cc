@@ -164,22 +164,22 @@ void View::RunCredit() {
                                      : CreditCalc::CreditType::kDifferentiated};
   CreditCalc::PaymentPlan plan = Controller::Calculate(info);
 
-  QStandardItemModel *model = new QStandardItemModel(this);
-  model->setColumnCount(5);
-  model->setHorizontalHeaderLabels(
-      {"Date", "Amount", "Principal", "Interest", "Balance"});
+  ui_->table_credit->setRowCount(plan.dates.size());
 
   for (std::size_t i = 0; i < plan.dates.size(); ++i) {
-    QList<QStandardItem *> rows;
-    rows.append(new QStandardItem(QString::fromStdString(plan.dates[i])));
-    rows.append(new QStandardItem(QString::number(plan.payments[i])));
-    rows.append(new QStandardItem(QString::number(plan.principals[i])));
-    rows.append(new QStandardItem(QString::number(plan.interests[i])));
-    rows.append(new QStandardItem(QString::number(plan.balances[i])));
-    model->appendRow(rows);
+    ui_->table_credit->setItem(
+        i, 0, new QTableWidgetItem(QString::fromStdString(plan.dates[i])));
+    ui_->table_credit->setItem(
+        i, 1, new QTableWidgetItem(QString::number(plan.payments[i], 'f', 2)));
+    ui_->table_credit->setItem(
+        i, 2,
+        new QTableWidgetItem(QString::number(plan.principals[i], 'f', 2)));
+    ui_->table_credit->setItem(
+        i, 3, new QTableWidgetItem(QString::number(plan.interests[i], 'f', 2)));
+    ui_->table_credit->setItem(
+        i, 4, new QTableWidgetItem(QString::number(plan.balances[i], 'f', 2)));
   }
-
-  ui_->table_credit->setModel(model);
+  ui_->table_credit->resizeColumnToContents(0);
 }
 
 }  // namespace s21
