@@ -164,7 +164,12 @@ void View::RunCredit() {
                                      : CreditCalc::CreditType::kDifferentiated};
   CreditCalc::PaymentPlan plan = Controller::Calculate(info);
 
+  ui_->table_credit->clear();
+
   ui_->table_credit->setRowCount(plan.dates.size());
+  ui_->table_credit->setColumnCount(5);
+  ui_->table_credit->setHorizontalHeaderLabels(
+      {"Date", "Payment", "Principal", "Interest", "Balance"});
 
   for (std::size_t i = 0; i < plan.dates.size(); ++i) {
     ui_->table_credit->setItem(
