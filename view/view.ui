@@ -1770,10 +1770,10 @@ border-radius: 10px;
     <widget class="QPushButton" name="btn_run_credit">
      <property name="geometry">
       <rect>
-       <x>640</x>
-       <y>460</y>
-       <width>120</width>
-       <height>40</height>
+       <x>29</x>
+       <y>469</y>
+       <width>171</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -1803,18 +1803,18 @@ border-radius: 10px;
     <widget class="QDoubleSpinBox" name="amount_credit">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>20</y>
-       <width>211</width>
+       <x>20</x>
+       <y>30</y>
+       <width>191</width>
        <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">font: 16px;
+      <string notr="true">font: 14px;
 color: #dde3e8;
 background-color: #00000000;
 selection-background-color: #a24fea;
-border: 2px solid #2c3849;
+border: none;
 border-radius: 10px;</string>
      </property>
      <property name="frame">
@@ -1827,7 +1827,7 @@ border-radius: 10px;</string>
       <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
      <property name="prefix">
-      <string>  Amount: </string>
+      <string> Amount:           </string>
      </property>
      <property name="decimals">
       <number>2</number>
@@ -1836,7 +1836,7 @@ border-radius: 10px;</string>
       <double>0.010000000000000</double>
      </property>
      <property name="maximum">
-      <double>99999999999.000000000000000</double>
+      <double>999999999.000000000000000</double>
      </property>
      <property name="singleStep">
       <double>100000.000000000000000</double>
@@ -1848,18 +1848,18 @@ border-radius: 10px;</string>
     <widget class="QSpinBox" name="term_credit">
      <property name="geometry">
       <rect>
-       <x>250</x>
-       <y>20</y>
-       <width>151</width>
+       <x>20</x>
+       <y>60</y>
+       <width>191</width>
        <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">font: 16px;
+      <string notr="true">font: 14px;
 color: #dde3e8;
 background-color: #00000000;
 selection-background-color: #a24fea;
-border: 2px solid #2c3849;
+border: none;
 border-radius: 10px;</string>
      </property>
      <property name="frame">
@@ -1875,7 +1875,7 @@ border-radius: 10px;</string>
       <string> months</string>
      </property>
      <property name="prefix">
-      <string>  Term:  </string>
+      <string> Term:                 </string>
      </property>
      <property name="maximum">
       <number>600</number>
@@ -1887,18 +1887,18 @@ border-radius: 10px;</string>
     <widget class="QDoubleSpinBox" name="rate_credit">
      <property name="geometry">
       <rect>
-       <x>410</x>
-       <y>20</y>
+       <x>20</x>
+       <y>90</y>
        <width>191</width>
        <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">font: 16px;
+      <string notr="true">font: 14px;
 color: #dde3e8;
 background-color: #00000000;
 selection-background-color: #a24fea;
-border: 2px solid #2c3849;
+border: none;
 border-radius: 10px;</string>
      </property>
      <property name="frame">
@@ -1911,7 +1911,7 @@ border-radius: 10px;</string>
       <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
      <property name="prefix">
-      <string>  Interest Rate: </string>
+      <string> Rate:                  </string>
      </property>
      <property name="suffix">
       <string> %</string>
@@ -1932,12 +1932,12 @@ border-radius: 10px;</string>
       <double>5.000000000000000</double>
      </property>
     </widget>
-    <widget class="QLabel" name="display_credit">
+    <widget class="QLabel" name="display_credit_parameters">
      <property name="geometry">
       <rect>
        <x>9</x>
        <y>10</y>
-       <width>781</width>
+       <width>211</width>
        <height>521</height>
       </rect>
      </property>
@@ -1964,17 +1964,17 @@ border: 2px solid #253040;</string>
     <widget class="QComboBox" name="type_credit">
      <property name="geometry">
       <rect>
-       <x>610</x>
-       <y>20</y>
-       <width>161</width>
+       <x>20</x>
+       <y>120</y>
+       <width>171</width>
        <height>41</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">font: 16px;
+      <string notr="true">font: 14px;
 background-color: #00000000;
 color: #dde3e8;
-border: 2px solid #2c3849;
+border: none;
 border-radius: 10px;
 selection-background-color: #a24fea;</string>
      </property>
@@ -1998,10 +1998,10 @@ selection-background-color: #a24fea;</string>
     <widget class="QTableWidget" name="table_credit">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>90</y>
-       <width>561</width>
-       <height>411</height>
+       <x>240</x>
+       <y>40</y>
+       <width>541</width>
+       <height>461</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -2044,7 +2044,36 @@ QTableWidget::horizontalHeader {
       <enum>Qt::DotLine</enum>
      </property>
     </widget>
-    <zorder>display_credit</zorder>
+    <widget class="QLabel" name="display_credit_table">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>10</y>
+       <width>561</width>
+       <height>521</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 26px;
+color: #43eb99;
+background-color: #253040;
+border-radius: 10px;
+border: 2px solid #253040;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignBottom|Qt::AlignRight|Qt::AlignTrailing</set>
+     </property>
+     <property name="margin">
+      <number>16</number>
+     </property>
+     <property name="indent">
+      <number>0</number>
+     </property>
+    </widget>
+    <zorder>display_credit_parameters</zorder>
     <zorder>line_credit</zorder>
     <zorder>line_gr_credit</zorder>
     <zorder>amount_credit</zorder>
@@ -2052,6 +2081,7 @@ QTableWidget::horizontalHeader {
     <zorder>rate_credit</zorder>
     <zorder>type_credit</zorder>
     <zorder>btn_run_credit</zorder>
+    <zorder>display_credit_table</zorder>
     <zorder>table_credit</zorder>
    </widget>
    <widget class="QWidget" name="tab_deposit">
