@@ -185,6 +185,30 @@ void View::RunCredit() {
         i, 4, new QTableWidgetItem(QString::number(plan.balances[i], 'f', 2)));
   }
   ui_->table_credit->resizeColumnToContents(0);
+
+  double total_interest =
+      std::accumulate(plan.interests.begin(), plan.interests.end(), 0.0);
+  double total_payment =
+      std::accumulate(plan.payments.begin(), plan.payments.end(), 0.0);
+
+  if (info.type == CreditCalc::CreditType::kAnnuity) {
+    double monthly_payment = plan.payments[0];
+
+    ui_->lbl_monthly_payment->setText(
+        QString("Monthly payment: %1").arg(monthly_payment, 0, 'f', 2));
+  } else if (info.type == CreditCalc::CreditType::kDifferentiated) {
+    double first_payment = plan.payments.front();
+    double last_payment = plan.payments.back();
+
+    ui_->lbl_monthly_payment->setText(QString("Monthly payment:\n%1 ... %2")
+                                          .arg(first_payment, 0, 'f', 2)
+                                          .arg(last_payment, 0, 'f', 2));
+  }
+
+  ui_->lbl_total_interest->setText(
+      QString("Overpayment: %1").arg(total_interest, 0, 'f', 2));
+  ui_->lbl_total_payment->setText(
+      QString("Total payment: %1").arg(total_payment, 0, 'f', 2));
 }
 
 }  // namespace s21
