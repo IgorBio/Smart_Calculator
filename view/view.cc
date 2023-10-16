@@ -33,6 +33,8 @@ void View::SetupUi() {
   connect(ui_->btn_plot, &QPushButton::clicked, this, [this]() { Plot(); });
   connect(ui_->btn_run_credit, &QPushButton::clicked, this,
           [this]() { RunCredit(); });
+  connect(ui_->check_cap, &QCheckBox::stateChanged,
+          [=](int state) { ui_->cb_cap->setEnabled(state == Qt::Checked); });
 }
 
 void View::ResetUi() {
